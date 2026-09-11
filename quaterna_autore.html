@@ -32,122 +32,67 @@
     max-width: 1100px;
     margin: 0 auto;
   }
-  h1 {
-    color: var(--oro);
-    font-size: 22px;
-    margin: 8px 0 2px;
-  }
-  .sub {
-    color: var(--testo-sec);
-    font-size: 13px;
-    margin-bottom: 16px;
-  }
-  .tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-  }
+  h1 { color: var(--oro); font-size: 22px; margin: 8px 0 2px; }
+  .sub { color: var(--testo-sec); font-size: 13px; margin-bottom: 16px; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
   .tab {
-    padding: 10px 16px;
-    cursor: pointer;
-    color: var(--testo-sec);
-    font-weight: 500;
-    font-size: 14px;
-    border-bottom: 2px solid transparent;
+    padding: 10px 16px; cursor: pointer; color: var(--testo-sec);
+    font-weight: 500; font-size: 14px; border-bottom: 2px solid transparent;
   }
-  .tab.active {
-    color: var(--oro);
-    border-bottom-color: var(--oro);
-  }
+  .tab.active { color: var(--oro); border-bottom-color: var(--oro); }
   .view { display: none; }
   .view.active { display: block; }
-
   .panel {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 16px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; margin-bottom: 16px;
   }
-  .panel-title {
-    color: var(--oro);
-    font-weight: 600;
-    font-size: 15px;
-    margin: 0 0 10px;
-  }
-  .num-grande {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--oro-chiaro);
-    letter-spacing: 4px;
-  }
+  .panel-title { color: var(--oro); font-weight: 600; font-size: 15px; margin: 0 0 10px; }
+  .num-grande { font-size: 28px; font-weight: 700; color: var(--oro-chiaro); letter-spacing: 4px; }
   .badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-top: 8px;
+    display: inline-block; padding: 4px 10px; border-radius: 6px;
+    font-size: 13px; font-weight: 600; margin-top: 8px;
   }
   .badge.quaterna { background: rgba(255,211,105,0.15); color: var(--oro); }
   .badge.win { background: rgba(0,230,118,0.15); color: var(--verde); }
   .badge.gioco { background: rgba(100,181,246,0.15); color: var(--azzurro); }
   .badge.negativo { background: rgba(229,115,115,0.15); color: var(--rosso); }
-
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th {
-    background: #0f1115;
-    color: #fff;
-    padding: 8px 6px;
-    text-align: center;
-    font-weight: 600;
-    position: sticky; top: 0;
+    background: #0f1115; color: #fff; padding: 8px 6px;
+    text-align: center; font-weight: 600; position: sticky; top: 0;
   }
   td {
-    padding: 8px 6px;
-    text-align: center;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
+    padding: 8px 6px; text-align: center;
+    border-bottom: 1px solid var(--border); vertical-align: top;
   }
   tr:nth-child(even) td { background: var(--panel-3); }
   tr:nth-child(odd) td { background: var(--panel-2); }
   .table-wrap { max-height: 480px; overflow-y: auto; border-radius: 8px; }
-
   .form-grid {
-    display: grid;
-    grid-template-columns: 120px repeat(5, 1fr);
-    gap: 6px;
-    margin-bottom: 6px;
+    display: grid; grid-template-columns: 120px repeat(5, 1fr);
+    gap: 6px; margin-bottom: 6px;
   }
   .form-grid.header { color: var(--testo-sec); font-size: 12px; }
   input, select {
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    color: var(--testo);
-    padding: 8px;
-    border-radius: 6px;
-    font-size: 14px;
-    width: 100%;
+    background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--testo); padding: 8px; border-radius: 6px;
+    font-size: 14px; width: 100%;
   }
   input:focus, select:focus { outline: 1px solid var(--oro); }
   button {
-    background: var(--panel-2);
-    border: 1px solid var(--oro);
-    color: var(--oro);
-    padding: 10px 18px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 14px;
+    background: var(--panel-2); border: 1px solid var(--oro);
+    color: var(--oro); padding: 10px 18px; border-radius: 6px;
+    font-weight: 600; cursor: pointer; font-size: 14px;
   }
   button:active { transform: scale(0.98); }
   button.secondary { border-color: var(--border); color: var(--testo); }
   button.danger { border-color: var(--rosso); color: var(--rosso); }
+  button.primary { background: var(--oro); color: #0a0a12; border-color: var(--oro); }
   .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .msg { font-size: 13px; padding: 10px; border-radius: 6px; margin-top: 10px; }
   .msg.ok { background: rgba(0,230,118,0.1); color: var(--verde); }
   .msg.err { background: rgba(229,115,115,0.1); color: var(--rosso); }
+  .msg.info { background: rgba(100,181,246,0.1); color: var(--azzurro); }
   .empty { text-align: center; color: var(--testo-sec); padding: 30px; }
   .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px,1fr)); gap: 8px; margin-top: 10px; }
   .stat { background: var(--panel-2); border-radius: 8px; padding: 10px; text-align: center; }
@@ -190,6 +135,11 @@
 <div id="view-archivio" class="view">
   <div class="panel">
     <p class="panel-title">Archivio estrazioni salvate</p>
+    <div class="row" style="margin-bottom:12px;">
+      <button class="primary" id="btnCaricaStorico">📥 Carica da storico.txt</button>
+      <button class="secondary" id="btnAggiornaStorico">🔄 Aggiorna da storico.txt</button>
+    </div>
+    <div id="msgStorico"></div>
     <div id="archivioContent"></div>
   </div>
 </div>
@@ -198,6 +148,7 @@
 const RUOTE = ["BA","CA","FI","GE","MI","NA","PA","RM","TO","VE","RN"];
 const NOMI = ["Bari","Cagliari","Firenze","Genova","Milano","Napoli","Palermo","Roma","Torino","Venezia","Nazionale"];
 const STORAGE_KEY = "quaterna_archivio";
+const STORICO_URL = "./storico.txt";
 
 let archivio = [];
 
@@ -225,6 +176,54 @@ function risolviDuplicati(nums) {
 }
 
 function getNumeri(e) { return [e.n1,e.n2,e.n3,e.n4,e.n5]; }
+
+function parseStorico(text) {
+  const list = [];
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    const parts = line.trim().split(/\s+/).filter(x => x !== "");
+    if (parts.length >= 7 && /^\d{4}\/\d{2}\/\d{2}$/.test(parts[0])) {
+      const data = parts[0];
+      const ruota = parts[1].toUpperCase();
+      const nums = [parts[2],parts[3],parts[4],parts[5],parts[6]].map(Number);
+      if (nums.every(n => !isNaN(n) && n >= 1 && n <= 90)) {
+        list.push({ data, ruota, n1:nums[0], n2:nums[1], n3:nums[2], n4:nums[3], n5:nums[4] });
+      }
+    }
+  }
+  return list;
+}
+
+async function caricaDaStorico(sostituisci) {
+  const msgEl = document.getElementById("msgStorico");
+  msgEl.innerHTML = '<div class="msg info">⏳ Scaricamento storico.txt in corso...</div>';
+  try {
+    const resp = await fetch(STORICO_URL + "?t=" + Date.now());
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const text = await resp.text();
+    const nuove = parseStorico(text);
+    if (nuove.length === 0) {
+      msgEl.innerHTML = '<div class="msg err">❌ storico.txt vuoto o formato non valido</div>';
+      return;
+    }
+    if (sostituisci) {
+      archivio = nuove;
+    } else {
+      // Unisci senza duplicati (stessa data+ruota)
+      const chiaviEsistenti = new Set(archivio.map(e => e.data + "|" + e.ruota));
+      for (const e of nuove) {
+        const k = e.data + "|" + e.ruota;
+        if (!chiaviEsistenti.has(k)) { archivio.push(e); chiaviEsistenti.add(k); }
+      }
+    }
+    archivio.sort((a,b) => a.data.localeCompare(b.data));
+    await salvaArchivio();
+    msgEl.innerHTML = '<div class="msg ok">✅ Caricate ' + nuove.length + ' estrazioni da storico.txt (totale archivio: ' + archivio.length + ')</div>';
+    renderTutto();
+  } catch(e) {
+    msgEl.innerHTML = '<div class="msg err">❌ Errore: ' + e.message + '</div>';
+  }
+}
 
 function trova5aEstrazione(ruota, anno, mese) {
   const meseStr = anno + "/" + String(mese).padStart(2,'0');
@@ -319,13 +318,13 @@ function badgeClass(stato) {
 function renderPrevisione() {
   const el = document.getElementById("view-previsione");
   if (archivio.length===0) {
-    el.innerHTML = '<div class="panel empty">Nessuna estrazione in archivio.<br>Vai su "Inserisci estrazione" per iniziare.</div>';
+    el.innerHTML = '<div class="panel empty">Nessuna estrazione in archivio.<br>Vai su "Archivio" e clicca "📥 Carica da storico.txt" per iniziare.</div>';
     return;
   }
   const oggi = new Date();
   const dataTarget = trova5aEstrazione("VE", oggi.getFullYear(), oggi.getMonth()+1);
   if (!dataTarget) {
-    el.innerHTML = '<div class="panel"><p class="panel-title">In attesa della 5&ordf; estrazione del mese su Venezia</p></div>';
+    el.innerHTML = '<div class="panel"><p class="panel-title">In attesa della 5&ordf; estrazione del mese su Venezia</p><p style="color:var(--testo-sec);font-size:13px;">Servono almeno 5 estrazioni di Venezia nel mese corrente (' + (oggi.getMonth()+1) + '/' + oggi.getFullYear() + ').</p></div>';
     return;
   }
   const archTronc = archivio.filter(x=>x.data<=dataTarget);
@@ -381,16 +380,17 @@ function buildFormRuote() {
 function renderArchivio() {
   const el = document.getElementById("archivioContent");
   if (archivio.length===0) {
-    el.innerHTML = '<div class="empty">Nessuna estrazione salvata.</div>';
+    el.innerHTML = '<div class="empty">Nessuna estrazione salvata.<br>Clicca "📥 Carica da storico.txt" qui sopra.</div>';
     return;
   }
   const dateUniche = [...new Set(archivio.map(x=>x.data))].sort().reverse();
   let rows = "";
-  dateUniche.forEach(d=>{
+  dateUniche.slice(0, 200).forEach(d=>{
     const estrazioni = archivio.filter(x=>x.data===d);
     const ruoteStr = estrazioni.map(e=>e.ruota+": "+getNumeri(e).map(pad2).join(" ")).join(" &nbsp;|&nbsp; ");
     rows += `<tr><td style="text-align:left;font-weight:600;color:var(--oro);white-space:nowrap;">${d}</td><td style="text-align:left;font-size:12px;">${ruoteStr}</td></tr>`;
   });
+  const extra = dateUniche.length > 200 ? '<tr><td colspan="2" style="color:var(--testo-sec);font-size:12px;">... e altre ' + (dateUniche.length-200) + ' date</td></tr>' : '';
   el.innerHTML = `
     <div class="stat-grid">
       <div class="stat"><div class="n">${dateUniche.length}</div><div class="l">Date registrate</div></div>
@@ -398,7 +398,7 @@ function renderArchivio() {
     </div>
     <div class="table-wrap" style="margin-top:14px;">
       <table><thead><tr><th>Data</th><th style="text-align:left;">Ruote</th></tr></thead>
-      <tbody>${rows}</tbody></table>
+      <tbody>${rows}${extra}</tbody></table>
     </div>
     <div class="row" style="margin-top:12px;">
       <button class="danger" id="btnCancella">Cancella tutto l'archivio</button>
@@ -408,6 +408,7 @@ function renderArchivio() {
     if (confirm("Cancellare tutte le estrazioni salvate? L'operazione non è reversibile.")) {
       archivio = [];
       await salvaArchivio();
+      document.getElementById("msgStorico").innerHTML = "";
       renderTutto();
     }
   });
@@ -430,6 +431,13 @@ document.querySelectorAll(".tab").forEach(tab=>{
 document.getElementById("btnPulisci").addEventListener("click", ()=>{
   document.querySelectorAll("#formRuote input").forEach(i=>i.value="");
   document.getElementById("msgInserisci").innerHTML="";
+});
+
+document.getElementById("btnCaricaStorico").addEventListener("click", ()=> caricaDaStorico(false));
+document.getElementById("btnAggiornaStorico").addEventListener("click", ()=>{
+  if (confirm("Sostituire tutto l'archivio con il contenuto di storico.txt? Le estrazioni inserite a mano andranno perse.")) {
+    caricaDaStorico(true);
+  }
 });
 
 document.getElementById("btnSalva").addEventListener("click", async ()=>{

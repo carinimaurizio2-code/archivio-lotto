@@ -67,6 +67,22 @@
   .stat { background: var(--panel-2); border-radius: 8px; padding: 10px; text-align: center; }
   .stat .n { font-size: 18px; font-weight: 700; color: var(--oro); }
   .stat .l { font-size: 11px; color: var(--testo-sec); }
+  .contatti { 
+    margin-top: 24px; padding: 16px; 
+    background: var(--panel); border: 1px solid var(--border); 
+    border-radius: 10px; text-align: center;
+  }
+  .contatti-titolo { color: var(--oro); font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+  .contatti-links { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn-contatto {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 16px; border-radius: 8px;
+    text-decoration: none; font-weight: 600; font-size: 14px;
+    border: 1px solid var(--border);
+  }
+  .btn-whatsapp { background: rgba(37,211,102,0.15); color: #25d366; border-color: #25d366; }
+  .btn-chiama { background: rgba(100,181,246,0.15); color: var(--azzurro); border-color: var(--azzurro); }
+  .btn-contatto:active { transform: scale(0.97); }
 </style>
 </head>
 <body>
@@ -112,14 +128,26 @@
   </div>
 </div>
 
+<div class="contatti">
+  <div class="contatti-titolo">Info e contatti</div>
+  <div class="contatti-links">
+    <a href="https://wa.me/393388607242" target="_blank" class="btn-contatto btn-whatsapp">
+      💬 WhatsApp
+    </a>
+    <a href="tel:+393388607242" class="btn-contatto btn-chiama">
+      📞 Chiama
+    </a>
+  </div>
+</div>
+
 <script>
 const RUOTE = ["BA","CA","FI","GE","MI","NA","PA","RM","TO","VE","RN"];
 const NOMI = ["Bari","Cagliari","Firenze","Genova","Milano","Napoli","Palermo","Roma","Torino","Venezia","Nazionale"];
 const STORAGE_KEY_MANUALI = "quaterna_manuali";
 const STORICO_URL = "./storico.txt";
 
-let storico = [];   // letto dal file (non salvato)
-let manuali = [];   // salvati nel browser
+let storico = [];
+let manuali = [];
 
 function fuori90(n){ let v=n; while(v>90)v-=90; while(v<=0)v+=90; return v; }
 function calcolaFigura(n){ let s=Math.floor(n/10)+(n%10); if(s>9)s-=9; if(s===0)s=9; return s; }
@@ -167,7 +195,7 @@ function parseStorico(text){
 function archivioCompleto(){
   const mappa=new Map();
   for(const e of storico) mappa.set(e.data+"|"+e.ruota, e);
-  for(const e of manuali) mappa.set(e.data+"|"+e.ruota, e); // i manuali sovrascrivono
+  for(const e of manuali) mappa.set(e.data+"|"+e.ruota, e);
   return Array.from(mappa.values()).sort((a,b)=>a.data.localeCompare(b.data));
 }
 

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Quaterna d'Autore</title>
+<style>
+  :root {
+    --bg: #0a0a12;
+    --panel: #16161f;
+    --panel-2: #1e222a;
+    --panel-3: #262a33;
+    --border: #343a46;
+    --oro: #ffd369;
+    --oro-chiaro: #fac863;
+    --verde: #00e676;
+    --azzurro: #64b5f6;
+    --rosso: #e57373;
+    --testo: #e4e4ee;
+    --testo-sec: #8c8ca0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--testo);
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 {
+    color: var(--oro);
+    font-size: 22px;
+    margin: 8px 0 2px;
+  }
+  .sub {
+    color: var(--testo-sec);
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    padding: 10px 16px;
+    cursor: pointer;
+    color: var(--testo-sec);
+    font-weight: 500;
+    font-size: 14px;
+    border-bottom: 2px solid transparent;
+  }
+  .tab.active {
+    color: var(--oro);
+    border-bottom-color: var(--oro);
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .panel-title {
+    color: var(--oro);
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 10px;
+  }
+  .num-grande {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--oro-chiaro);
+    letter-spacing: 4px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+  .badge.quaterna { background: rgba(255,211,105,0.15); color: var(--oro); }
+  .badge.win { background: rgba(0,230,118,0.15); color: var(--verde); }
+  .badge.gioco { background: rgba(100,181,246,0.15); color: var(--azzurro); }
+  .badge.negativo { background: rgba(229,115,115,0.15); color: var(--rosso); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: #0f1115;
+    color: #fff;
+    padding: 8px 6px;
+    text-align: center;
+    font-weight: 600;
+    position: sticky; top: 0;
+  }
+  td {
+    padding: 8px 6px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: var(--panel-3); }
+  tr:nth-child(odd) td { background: var(--panel-2); }
+  .table-wrap { max-height: 480px; overflow-y: auto; border-radius: 8px; }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 120px repeat(5, 1fr);
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .form-grid.header { color: var(--testo-sec); font-size: 12px; }
+  input, select {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--testo);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+  }
+  input:focus, select:focus { outline: 1px solid var(--oro); }
+  button {
+    background: var(--panel-2);
+    border: 1px solid var(--oro);
+    color: var(--oro);
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  button:active { transform: scale(0.98); }
+  button.secondary { border-color: var(--border); color: var(--testo); }
+  button.danger { border-color: var(--rosso); color: var(--rosso); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .msg { font-size: 13px; padding: 10px; border-radius: 6px; margin-top: 10px; }
+  .msg.ok { background: rgba(0,230,118,0.1); color: var(--verde); }
+  .msg.err { background: rgba(229,115,115,0.1); color: var(--rosso); }
+  .empty { text-align: center; color: var(--testo-sec); padding: 30px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px,1fr)); gap: 8px; margin-top: 10px; }
+  .stat { background: var(--panel-2); border-radius: 8px; padding: 10px; text-align: center; }
+  .stat .n { font-size: 18px; font-weight: 700; color: var(--oro); }
+  .stat .l { font-size: 11px; color: var(--testo-sec); }
+</style>
+</head>
+<body>
+
+<h1>La Quaterna d'Autore</h1>
+<p class="sub">Versione web — funziona da telefono, tablet o computer</p>
+
+<div class="tabs">
+  <div class="tab active" data-view="previsione">Previsione</div>
+  <div class="tab" data-view="inserisci">Inserisci estrazione</div>
+  <div class="tab" data-view="archivio">Archivio</div>
+</div>
+
+<div id="view-previsione" class="view active"></div>
+
+<div id="view-inserisci" class="view">
+  <div class="panel">
+    <p class="panel-title">Nuova estrazione</p>
+    <div class="row" style="margin-bottom:12px;">
+      <label style="font-size:13px;color:var(--testo-sec);">Data estrazione</label>
+      <input type="date" id="dataInput" style="max-width:180px;">
+    </div>
+    <div class="form-grid header">
+      <div>Ruota</div><div>1°</div><div>2°</div><div>3°</div><div>4°</div><div>5°</div>
+    </div>
+    <div id="formRuote"></div>
+    <div class="row" style="margin-top:12px;">
+      <button id="btnSalva">Salva in archivio</button>
+      <button class="secondary" id="btnPulisci">Pulisci campi</button>
+    </div>
+    <div id="msgInserisci"></div>
+  </div>
+</div>
+
+<div id="view-archivio" class="view">
+  <div class="panel">
+    <p class="panel-title">Archivio estrazioni salvate</p>
+    <div id="archivioContent"></div>
+  </div>
+</div>
+
+<script>
+const RUOTE = ["BA","CA","FI","GE","MI","NA","PA","RM","TO","VE","RN"];
+const NOMI = ["Bari","Cagliari","Firenze","Genova","Milano","Napoli","Palermo","Roma","Torino","Venezia","Nazionale"];
+const STORAGE_KEY = "quaterna_archivio";
+
+let archivio = [];
+
+function fuori90(n) {
+  let v = n;
+  while (v > 90) v -= 90;
+  while (v <= 0) v += 90;
+  return v;
+}
+function calcolaFigura(n) {
+  let s = Math.floor(n/10) + (n%10);
+  if (s > 9) s -= 9;
+  if (s === 0) s = 9;
+  return s;
+}
+function pad2(n){ return n.toString().padStart(2,'0'); }
+
+function risolviDuplicati(nums) {
+  for (let p=0;p<4;p++) {
+    if (nums[1]===nums[0]) nums[1]=fuori90(nums[1]+1);
+    if (nums[2]===nums[0]||nums[2]===nums[1]) nums[2]=fuori90(nums[2]+1);
+    if (nums[3]===nums[0]||nums[3]===nums[1]||nums[3]===nums[2]) nums[3]=fuori90(nums[3]+1);
+  }
+  return nums;
+}
+
+function getNumeri(e) { return [e.n1,e.n2,e.n3,e.n4,e.n5]; }
+
+function trova5aEstrazione(ruota, anno, mese) {
+  const meseStr = anno + "/" + String(mese).padStart(2,'0');
+  const list = archivio.filter(x => x.ruota===ruota && x.data.startsWith(meseStr))
+                        .sort((a,b)=>a.data.localeCompare(b.data));
+  return list.length >= 5 ? list[4].data : null;
+}
+
+function calcolaPrevisione(dataTarget, archivioCalcolo) {
+  const eVE = archivioCalcolo.find(x=>x.data===dataTarget && x.ruota==="VE");
+  if (!eVE) return null;
+  const fig = calcolaFigura(eVE.n2);
+
+  const eMI = archivioCalcolo.find(x=>x.data===dataTarget && x.ruota==="MI");
+  const eGE = archivioCalcolo.find(x=>x.data===dataTarget && x.ruota==="GE");
+  const eCA = archivioCalcolo.find(x=>x.data===dataTarget && x.ruota==="CA");
+  const eBA = archivioCalcolo.find(x=>x.data===dataTarget && x.ruota==="BA");
+
+  let n1=0,n2=0,n3=0,n4=0;
+  if (fig===1) {
+    n1=fuori90(eVE.n2+68); n2=fuori90(eVE.n5+49);
+    n3=eMI?fuori90(eMI.n2+32):fuori90(eVE.n2+32);
+    n4=eGE?fuori90(eGE.n4+2):fuori90(eVE.n4+2);
+  } else if (fig===2||fig===7) {
+    n1=fuori90(eVE.n3+9); n2=fuori90(eVE.n5+55); n3=fuori90(eVE.n3+21);
+    n4=eCA?fuori90(eCA.n2+47):fuori90(eVE.n2+47);
+  } else if (fig===3||fig===4||fig===6) {
+    n1=fuori90(eVE.n2+21); n2=fuori90(eVE.n5+56); n3=fuori90(eVE.n2+58);
+    n4=eBA?fuori90(eBA.n5+64):fuori90(eVE.n5+64);
+  } else {
+    n1=fuori90(eVE.n1+52); n2=fuori90(eVE.n2+70); n3=fuori90(eVE.n2+9); n4=fuori90(eVE.n2+77);
+  }
+  const r = risolviDuplicati([n1,n2,n3,n4]);
+  return {
+    dataCalcolo: dataTarget, figura: fig,
+    n1:r[0], n2:r[1], n3:r[2], n4:r[3],
+    quaterna: r.map(pad2).join("-"),
+    esitiPlurimi: [], colpoMinimo: 0, stato: "NEGATIVO", colpiGiocati: 0
+  };
+}
+
+function verificaEsiti(res, dataInizio) {
+  const nums = [res.n1,res.n2,res.n3,res.n4];
+  const dateSuccessive = [...new Set(
+    archivio.filter(x=>x.data>dataInizio && x.ruota==="VE").map(x=>x.data)
+  )].sort().slice(0,13);
+  res.colpiGiocati = dateSuccessive.length;
+
+  let colpo=0;
+  for (const d of dateSuccessive) {
+    colpo++;
+    const estrVE = archivio.find(x=>x.data===d && x.ruota==="VE");
+    if (estrVE) {
+      const usciti = getNumeri(estrVE).filter(n=>nums.includes(n)).sort((a,b)=>a-b);
+      if (usciti.length>=2) {
+        const str = usciti.map(pad2).join(".");
+        if (usciti.length===4) { res.esitiPlurimi.push("QUATERNA SECCA ("+str+") su VE al "+colpo+"° colpo"); res.stato="QUATERNA"; if(!res.colpoMinimo||colpo<res.colpoMinimo) res.colpoMinimo=colpo; }
+        else if (usciti.length===3) { res.esitiPlurimi.push("Terno in quaterna ("+str+") su VE al "+colpo+"° colpo"); if(res.stato!=="QUATERNA") res.stato="TERNO"; if(!res.colpoMinimo||colpo<res.colpoMinimo) res.colpoMinimo=colpo; }
+        else { res.esitiPlurimi.push("Ambo in quaterna ("+str+") su VE al "+colpo+"° colpo"); if(res.stato==="NEGATIVO") res.stato="AMBO"; if(!res.colpoMinimo||colpo<res.colpoMinimo) res.colpoMinimo=colpo; }
+      }
+    }
+    const estrRN = archivio.find(x=>x.data===d && x.ruota==="RN");
+    if (estrRN) {
+      const usciti = getNumeri(estrRN).filter(n=>nums.includes(n)).sort((a,b)=>a-b);
+      if (usciti.length>=2) {
+        const str = usciti.map(pad2).join(".");
+        if (usciti.length===4) { res.esitiPlurimi.push("QUATERNA SECCA ("+str+") su NZ al "+colpo+"° colpo"); res.stato="QUATERNA"; if(!res.colpoMinimo||colpo<res.colpoMinimo) res.colpoMinimo=colpo; }
+        else if (usciti.length===3) { res.esitiPlurimi.push("Terno in quaterna ("+str+") su NZ al "+colpo+"° colpo"); if(res.stato!=="QUATERNA") res.stato="TERNO"; if(!res.colpoMinimo||colpo<res.colpoMinimo) res.colpoMinimo=colpo; }
+        else { res.esitiPlurimi.push("Ambo in quaterna ("+str+") su NZ al "+colpo+"° colpo"); if(res.stato==="NEGATIVO") res.stato="AMBO"; if(!res.colpoMinimo||colpo<res.colpoMinimo) res.colpoMinimo=colpo; }
+      }
+    }
+  }
+}
+
+async function caricaArchivio() {
+  try {
+    const r = await window.storage.get(STORAGE_KEY, false);
+    archivio = r && r.value ? JSON.parse(r.value) : [];
+  } catch(e) { archivio = []; }
+}
+async function salvaArchivio() {
+  await window.storage.set(STORAGE_KEY, JSON.stringify(archivio), false);
+}
+
+function badgeClass(stato) {
+  if (stato==="QUATERNA") return "quaterna";
+  if (stato==="TERNO"||stato==="AMBO") return "win";
+  if (stato==="NEGATIVO") return "negativo";
+  return "gioco";
+}
+
+function renderPrevisione() {
+  const el = document.getElementById("view-previsione");
+  if (archivio.length===0) {
+    el.innerHTML = '<div class="panel empty">Nessuna estrazione in archivio.<br>Vai su "Inserisci estrazione" per iniziare.</div>';
+    return;
+  }
+  const oggi = new Date();
+  const dataTarget = trova5aEstrazione("VE", oggi.getFullYear(), oggi.getMonth()+1);
+  if (!dataTarget) {
+    el.innerHTML = '<div class="panel"><p class="panel-title">In attesa della 5&ordf; estrazione del mese su Venezia</p></div>';
+    return;
+  }
+  const archTronc = archivio.filter(x=>x.data<=dataTarget);
+  const res = calcolaPrevisione(dataTarget, archTronc);
+  if (!res) { el.innerHTML = '<div class="panel">Dati VE non disponibili per questa data.</div>'; return; }
+  verificaEsiti(res, dataTarget);
+
+  let statoHtml = "";
+  if (res.stato!=="NEGATIVO" || res.colpiGiocati<13) {
+    const cls = badgeClass(res.stato);
+    const label = res.stato==="QUATERNA" ? "Quaterna secca al "+res.colpoMinimo+"° colpo"
+      : res.stato==="TERNO" ? "Terno vincente al "+res.colpoMinimo+"° colpo"
+      : res.stato==="AMBO" ? "Ambo vincente al "+res.colpoMinimo+"° colpo"
+      : "In gioco — colpo "+(res.colpiGiocati+1)+" di 13";
+    statoHtml = '<span class="badge '+cls+'">'+label+'</span>';
+  } else {
+    statoHtml = '<span class="badge negativo">Scaduta — nessuna vincita in 13 colpi</span>';
+  }
+
+  const esitiHtml = res.esitiPlurimi.length
+    ? '<ul style="margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--testo-sec);">'+res.esitiPlurimi.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
+    : '';
+
+  el.innerHTML = `
+    <div class="panel">
+      <p class="panel-title">5&ordf; estrazione Venezia: ${res.dataCalcolo} — Figura ${res.figura}</p>
+      <div class="num-grande">${res.quaterna}</div>
+      <p style="font-size:13px;color:var(--testo-sec);margin:8px 0 0;">Ruota: Venezia &middot; 13 estrazioni &middot; recupero su Nazionale</p>
+      <div style="margin-top:10px;">${statoHtml}</div>
+      ${esitiHtml}
+    </div>
+  `;
+}
+
+function buildFormRuote() {
+  const cont = document.getElementById("formRuote");
+  cont.innerHTML = "";
+  RUOTE.forEach((r,i)=>{
+    const div = document.createElement("div");
+    div.className = "form-grid";
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;font-size:13px;font-weight:${r==='VE'?'700':'400'};color:${r==='VE'?'var(--oro)':'var(--testo)'};">${r} (${NOMI[i]})</div>
+      <input type="number" min="1" max="90" data-r="${r}" data-i="1">
+      <input type="number" min="1" max="90" data-r="${r}" data-i="2">
+      <input type="number" min="1" max="90" data-r="${r}" data-i="3">
+      <input type="number" min="1" max="90" data-r="${r}" data-i="4">
+      <input type="number" min="1" max="90" data-r="${r}" data-i="5">
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function renderArchivio() {
+  const el = document.getElementById("archivioContent");
+  if (archivio.length===0) {
+    el.innerHTML = '<div class="empty">Nessuna estrazione salvata.</div>';
+    return;
+  }
+  const dateUniche = [...new Set(archivio.map(x=>x.data))].sort().reverse();
+  let rows = "";
+  dateUniche.forEach(d=>{
+    const estrazioni = archivio.filter(x=>x.data===d);
+    const ruoteStr = estrazioni.map(e=>e.ruota+": "+getNumeri(e).map(pad2).join(" ")).join(" &nbsp;|&nbsp; ");
+    rows += `<tr><td style="text-align:left;font-weight:600;color:var(--oro);white-space:nowrap;">${d}</td><td style="text-align:left;font-size:12px;">${ruoteStr}</td></tr>`;
+  });
+  el.innerHTML = `
+    <div class="stat-grid">
+      <div class="stat"><div class="n">${dateUniche.length}</div><div class="l">Date registrate</div></div>
+      <div class="stat"><div class="n">${archivio.length}</div><div class="l">Estrazioni totali</div></div>
+    </div>
+    <div class="table-wrap" style="margin-top:14px;">
+      <table><thead><tr><th>Data</th><th style="text-align:left;">Ruote</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    </div>
+    <div class="row" style="margin-top:12px;">
+      <button class="danger" id="btnCancella">Cancella tutto l'archivio</button>
+    </div>
+  `;
+  document.getElementById("btnCancella").addEventListener("click", async ()=>{
+    if (confirm("Cancellare tutte le estrazioni salvate? L'operazione non è reversibile.")) {
+      archivio = [];
+      await salvaArchivio();
+      renderTutto();
+    }
+  });
+}
+
+function renderTutto() {
+  renderPrevisione();
+  renderArchivio();
+}
+
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById("view-"+tab.dataset.view).classList.add("active");
+  });
+});
+
+document.getElementById("btnPulisci").addEventListener("click", ()=>{
+  document.querySelectorAll("#formRuote input").forEach(i=>i.value="");
+  document.getElementById("msgInserisci").innerHTML="";
+});
+
+document.getElementById("btnSalva").addEventListener("click", async ()=>{
+  const msgEl = document.getElementById("msgInserisci");
+  const dataVal = document.getElementById("dataInput").value;
+  if (!dataVal) {
+    msgEl.innerHTML = '<div class="msg err">Seleziona una data prima di salvare.</div>';
+    return;
+  }
+  const dataFmt = dataVal.replace(/-/g,"/");
+  let salvateCount = 0;
+  let erroreValidazione = null;
+
+  RUOTE.forEach(r=>{
+    const inputs = document.querySelectorAll(`input[data-r="${r}"]`);
+    const vals = Array.from(inputs).map(i=>i.value.trim());
+    const compilati = vals.filter(v=>v!=="").length;
+    if (compilati===0) return;
+    if (compilati<5) { erroreValidazione = "Completa tutti i 5 numeri per la ruota "+r+"."; return; }
+    const nums = vals.map(v=>parseInt(v,10));
+    if (nums.some(n=>isNaN(n)||n<1||n>90)) { erroreValidazione = "Numeri non validi sulla ruota "+r+" (devono essere tra 1 e 90)."; return; }
+
+    archivio = archivio.filter(e=>!(e.data===dataFmt && e.ruota===r));
+    archivio.push({ data: dataFmt, ruota: r, n1:nums[0], n2:nums[1], n3:nums[2], n4:nums[3], n5:nums[4] });
+    salvateCount++;
+  });
+
+  if (erroreValidazione) {
+    msgEl.innerHTML = '<div class="msg err">'+erroreValidazione+'</div>';
+    return;
+  }
+  if (salvateCount===0) {
+    msgEl.innerHTML = '<div class="msg err">Inserisci i numeri di almeno una ruota.</div>';
+    return;
+  }
+
+  await salvaArchivio();
+  msgEl.innerHTML = '<div class="msg ok">Estrazione del '+dataFmt+' salvata ('+salvateCount+' ruote).</div>';
+  document.querySelectorAll("#formRuote input").forEach(i=>i.value="");
+  renderTutto();
+});
+
+(async function init(){
+  buildFormRuote();
+  document.getElementById("dataInput").valueAsDate = new Date();
+  await caricaArchivio();
+  renderTutto();
+})();
+</script>
+</body>
+</html>

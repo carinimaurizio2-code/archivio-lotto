@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>La Quaterna d'Autore</title>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffd369">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root {
     --bg: #0a0a12;
@@ -475,6 +478,13 @@ document.getElementById("btnSalva").addEventListener("click", async ()=>{
   await caricaArchivio();
   renderTutto();
 })();
+</script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
 </script>
 </body>
 </html>

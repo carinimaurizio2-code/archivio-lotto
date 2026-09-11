@@ -177,18 +177,51 @@ function risolviDuplicati(nums) {
 
 function getNumeri(e) { return [e.n1,e.n2,e.n3,e.n4,e.n5]; }
 
+/* ===== SUPER PARSER: capisce quasi tutti i formati ===== */
+function normalizzaRuotaNome(s) {
+  const t = (s || "").toUpperCase().trim();
+  const map = {
+    "BA":"BA","BARI":"BA",
+    "CA":"CA","CAGLIARI":"CA",
+    "FI":"FI","FIRENZE":"FI",
+    "GE":"GE","GENOVA":"GE",
+    "MI":"MI","MILANO":"MI",
+    "NA":"NA","NAPOLI":"NA",
+    "PA":"PA","PALERMO":"PA",
+    "RM":"RM","ROMA":"RM",
+    "TO":"TO","TORINO":"TO",
+    "VE":"VE","VENEZIA":"VE",
+    "RN":"RN","NAZIONALE":"RN","NZ":"RN"
+  };
+  return map[t] || null;
+}
+
+function normalizzaData(s) {
+  let m;
+  if ((m = (s||"").match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/))) {
+    return m[1] + "/" + m[2].padStart(2,"0") + "/" + m[3].padStart(2,"0");
+  }
+  if ((m = (s||"").match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/))) {
+    return m[3] + "/" + m[2].padStart(2,"0") + "/" + m[1].padStart(2,"0");
+  }
+  return null;
+}
+
 function parseStorico(text) {
   const list = [];
   const lines = text.split(/\r?\n/);
   for (const line of lines) {
-    const parts = line.trim().split(/\s+/).filter(x => x !== "");
-    if (parts.length >= 7 && /^\d{4}\/\d{2}\/\d{2}$/.test(parts[0])) {
-      const data = parts[0];
-      const ruota = parts[1].toUpperCase();
-      const nums = [parts[2],parts[3],parts[4],parts[5],parts[6]].map(Number);
-      if (nums.every(n => !isNaN(n) && n >= 1 && n <= 90)) {
-        list.push({ data, ruota, n1:nums[0], n2:nums[1], n3:nums[2], n4:nums[3], n5:nums[4] });
-      }
+    if (!line.trim()) continue;
+    // accetta spazi, tab, punti e virgola, virgole come separatori
+    const parts = line.trim().split(/[\s;,\t]+/).filter(x => x !== "");
+    if (parts.length < 7) continue;
+    const data = normalizzaData(parts[0]);
+    if (!data) continue;
+    const ruota = normalizzaRuotaNome(parts[1]);
+    if (!ruota) continue;
+    const nums = parts.slice(2, 7).map(Number);
+    if (nums.length === 5 && nums.every(n => !isNaN(n) && n >= 1 && n <= 90)) {
+      list.push({ data: data, ruota: ruota, n1:nums[0], n2:nums[1], n3:nums[2], n4:nums[3], n5:nums[4] });
     }
   }
   return list;
@@ -196,20 +229,20 @@ function parseStorico(text) {
 
 async function caricaDaStorico(sostituisci) {
   const msgEl = document.getElementById("msgStorico");
-  msgEl.innerHTML = '<div class="msg info">⏳ Scaricamento storico.txt in corso...</div>';
+  msgEl.innerHTML = '<div class="msg info"> Scaricamento storico.txt in corso...</div>';
   try {
     const resp = await fetch(STORICO_URL + "?t=" + Date.now());
-    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    if (!resp.ok) throw new Error("HTTP " + resp.status + " (file non trovato)");
     const text = await resp.text();
     const nuove = parseStorico(text);
     if (nuove.length === 0) {
-      msgEl.innerHTML = '<div class="msg err">❌ storico.txt vuoto o formato non valido</div>';
+      const prima = (text.split(/\r?\n/).find(l => l.trim()) || "(file vuoto)").slice(0, 100);
+      msgEl.innerHTML = '<div class="msg err">❌ Formato non riconosciuto.<br>Prima riga del file: <b>' + prima + '</b><br>Mandami uno screenshot di questo messaggio!</div>';
       return;
     }
     if (sostituisci) {
       archivio = nuove;
     } else {
-      // Unisci senza duplicati (stessa data+ruota)
       const chiaviEsistenti = new Set(archivio.map(e => e.data + "|" + e.ruota));
       for (const e of nuove) {
         const k = e.data + "|" + e.ruota;

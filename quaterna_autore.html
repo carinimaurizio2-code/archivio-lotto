@@ -5,36 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>La Quaterna d'Autore</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ffd369">
-<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0a0a12">
+<link rel="apple-touch-icon" href="icon-512.png">
+<link rel="icon" type="image/png" href="icon-512.png">
 <style>
   :root {
     --bg: #0a0a12; --panel: #16161f; --panel-2: #1e222a; --panel-3: #262a33;
     --border: #343a46; --oro: #ffd369; --oro-chiaro: #fac863;
     --verde: #00e676; --azzurro: #64b5f6; --rosso: #e57373;
-    --testo: #e4e4ee; --testo-sec: #8c8ca0;
+    --testo: #e4e4ee; --testo-sec: #8c8ca0; --wa: #25d366;
   }
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   body { margin: 0; background: var(--bg); color: var(--testo);
     font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
-    padding: 16px; max-width: 1100px; margin: 0 auto; }
-  h1 { color: var(--oro); font-size: 22px; margin: 8px 0 2px; }
-  .sub { color: var(--testo-sec); font-size: 13px; margin-bottom: 16px; }
-  .tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
-  .tab { padding: 10px 16px; cursor: pointer; color: var(--testo-sec);
-    font-weight: 500; font-size: 14px; border-bottom: 2px solid transparent; }
-  .tab.active { color: var(--oro); border-bottom-color: var(--oro); }
+    padding: 12px 12px 78px; max-width: 1100px; margin: 0 auto; }
+  .header { display: flex; align-items: center; gap: 12px; margin: 4px 0 12px; }
+  .appicon { width: 46px; height: 46px; border-radius: 10px; border: 1px solid var(--border); }
+  h1 { color: var(--oro); font-size: 20px; margin: 0; }
+  .sub { color: var(--testo-sec); font-size: 12px; margin: 2px 0 0; }
   .view { display: none; } .view.active { display: block; }
   .panel { background: var(--panel); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    border-radius: 12px; padding: 14px; margin-bottom: 12px; }
   .panel-title { color: var(--oro); font-weight: 600; font-size: 15px; margin: 0 0 10px; }
-  .num-grande { font-size: 28px; font-weight: 700; color: var(--oro-chiaro); letter-spacing: 4px; }
-  .badge { display: inline-block; padding: 4px 10px; border-radius: 6px;
-    font-size: 13px; font-weight: 600; margin-top: 8px; }
-  .badge.quaterna { background: rgba(255,211,105,0.15); color: var(--oro); }
+  .num-gigante {
+    font-size: clamp(38px, 11vw, 64px); font-weight: 800; color: var(--oro-chiaro);
+    letter-spacing: 4px; text-align: center; margin: 14px 0 6px;
+    text-shadow: 0 0 24px rgba(255,211,105,0.35);
+  }
+  .badge { display: inline-block; padding: 8px 14px; border-radius: 8px;
+    font-size: 14px; font-weight: 700; margin-top: 8px; }
+  .badge.quaterna { background: rgba(255,211,105,0.18); color: var(--oro); }
   .badge.win { background: rgba(0,230,118,0.15); color: var(--verde); }
   .badge.gioco { background: rgba(100,181,246,0.15); color: var(--azzurro); }
   .badge.negativo { background: rgba(229,115,115,0.15); color: var(--rosso); }
+  .center { text-align: center; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th { background: #0f1115; color: #fff; padding: 8px 6px;
     text-align: center; font-weight: 600; position: sticky; top: 0; }
@@ -42,58 +47,70 @@
     border-bottom: 1px solid var(--border); vertical-align: top; }
   tr:nth-child(even) td { background: var(--panel-3); }
   tr:nth-child(odd) td { background: var(--panel-2); }
-  .table-wrap { max-height: 480px; overflow-y: auto; border-radius: 8px; }
-  .form-grid { display: grid; grid-template-columns: 120px repeat(5, 1fr);
-    gap: 6px; margin-bottom: 6px; }
-  .form-grid.header { color: var(--testo-sec); font-size: 12px; }
+  .table-wrap { max-height: 420px; overflow-y: auto; border-radius: 8px; }
+  .form-grid { display: grid; grid-template-columns: 92px repeat(5, 1fr);
+    gap: 5px; margin-bottom: 5px; }
+  .form-grid.header { color: var(--testo-sec); font-size: 11px; }
   input, select { background: var(--panel-2); border: 1px solid var(--border);
-    color: var(--testo); padding: 8px; border-radius: 6px;
-    font-size: 14px; width: 100%; }
+    color: var(--testo); padding: 10px 6px; border-radius: 6px;
+    font-size: 15px; width: 100%; text-align: center; }
   input:focus, select:focus { outline: 1px solid var(--oro); }
+  input[type="date"] { text-align: left; }
   button { background: var(--panel-2); border: 1px solid var(--oro);
-    color: var(--oro); padding: 10px 18px; border-radius: 6px;
-    font-weight: 600; cursor: pointer; font-size: 14px; }
+    color: var(--oro); padding: 12px 18px; border-radius: 8px;
+    font-weight: 700; cursor: pointer; font-size: 14px; }
   button:active { transform: scale(0.98); }
   button.secondary { border-color: var(--border); color: var(--testo); }
   button.danger { border-color: var(--rosso); color: var(--rosso); }
   button.primary { background: var(--oro); color: #0a0a12; border-color: var(--oro); }
+  button.wa { background: rgba(37,211,102,0.15); border-color: var(--wa); color: var(--wa); width: 100%; font-size: 15px; }
   .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .msg { font-size: 13px; padding: 10px; border-radius: 6px; margin-top: 10px; }
   .msg.ok { background: rgba(0,230,118,0.1); color: var(--verde); }
   .msg.err { background: rgba(229,115,115,0.1); color: var(--rosso); }
   .msg.info { background: rgba(100,181,246,0.1); color: var(--azzurro); }
-  .empty { text-align: center; color: var(--testo-sec); padding: 30px; }
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px,1fr)); gap: 8px; margin-top: 10px; }
-  .stat { background: var(--panel-2); border-radius: 8px; padding: 10px; text-align: center; }
-  .stat .n { font-size: 18px; font-weight: 700; color: var(--oro); }
-  .stat .l { font-size: 11px; color: var(--testo-sec); }
-  .contatti { 
-    margin-top: 24px; padding: 16px; 
-    background: var(--panel); border: 1px solid var(--border); 
-    border-radius: 10px; text-align: center;
-  }
-  .contatti-titolo { color: var(--oro); font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+  .empty { text-align: center; color: var(--testo-sec); padding: 26px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px,1fr)); gap: 8px; margin-top: 10px; }
+  .stat { background: var(--panel-2); border-radius: 8px; padding: 10px 6px; text-align: center; }
+  .stat .n { font-size: 18px; font-weight: 800; color: var(--oro); }
+  .stat .l { font-size: 10px; color: var(--testo-sec); }
+  .bottomnav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: var(--panel); border-top: 1px solid var(--border);
+    display: flex; padding-bottom: env(safe-area-inset-bottom); }
+  .bnav { flex: 1; padding: 8px 2px 10px; text-align: center;
+    color: var(--testo-sec); font-size: 10px; font-weight: 600; cursor: pointer; }
+  .bnav .ico { font-size: 20px; display: block; margin-bottom: 2px; }
+  .bnav.active { color: var(--oro); }
+  #splash { position: fixed; inset: 0; z-index: 9999; background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 14px; transition: opacity 0.5s ease; }
+  #splash img { width: 150px; height: 150px; border-radius: 26px;
+    box-shadow: 0 10px 40px rgba(255,211,105,0.3); animation: splashIn 0.6s ease; }
+  #splash .t { color: var(--oro); font-size: 18px; font-weight: 700; }
+  @keyframes splashIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+  #splash.hide { opacity: 0; pointer-events: none; }
+  .contatti { margin-top: 8px; padding: 14px; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 12px; text-align: center; }
+  .contatti-titolo { color: var(--oro); font-size: 13px; font-weight: 600; margin-bottom: 10px; }
   .contatti-links { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-  .btn-contatto {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 16px; border-radius: 8px;
-    text-decoration: none; font-weight: 600; font-size: 14px;
-    border: 1px solid var(--border);
-  }
-  .btn-whatsapp { background: rgba(37,211,102,0.15); color: #25d366; border-color: #25d366; }
+  .btn-contatto { display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 16px; border-radius: 8px; text-decoration: none;
+    font-weight: 700; font-size: 14px; border: 1px solid var(--border); }
+  .btn-whatsapp { background: rgba(37,211,102,0.15); color: var(--wa); border-color: var(--wa); }
   .btn-chiama { background: rgba(100,181,246,0.15); color: var(--azzurro); border-color: var(--azzurro); }
-  .btn-contatto:active { transform: scale(0.97); }
+  ul.esiti { margin: 10px 0 0; padding-left: 18px; font-size: 13px; color: var(--testo-sec); }
 </style>
 </head>
 <body>
 
-<h1>La Quaterna d'Autore</h1>
-<p class="sub">Versione web — funziona da telefono, tablet o computer</p>
+<div id="splash"><img src="icon-512.png" alt=""><div class="t">La Quaterna d'Autore</div></div>
 
-<div class="tabs">
-  <div class="tab active" data-view="previsione">Previsione</div>
-  <div class="tab" data-view="inserisci">Inserisci estrazione</div>
-  <div class="tab" data-view="archivio">Archivio</div>
+<div class="header">
+  <img src="icon-512.png" class="appicon" alt="">
+  <div>
+    <h1>La Quaterna d'Autore</h1>
+    <p class="sub">In gioco 1 quaterna su 1 ruota (Venezia)</p>
+  </div>
 </div>
 
 <div id="view-previsione" class="view active"></div>
@@ -101,17 +118,17 @@
 <div id="view-inserisci" class="view">
   <div class="panel">
     <p class="panel-title">Nuova estrazione</p>
-    <div class="row" style="margin-bottom:12px;">
-      <label style="font-size:13px;color:var(--testo-sec);">Data estrazione</label>
-      <input type="date" id="dataInput" style="max-width:180px;">
+    <div class="row" style="margin-bottom:10px;">
+      <label style="font-size:13px;color:var(--testo-sec);">Data</label>
+      <input type="date" id="dataInput" style="max-width:170px;">
     </div>
     <div class="form-grid header">
       <div>Ruota</div><div>1°</div><div>2°</div><div>3°</div><div>4°</div><div>5°</div>
     </div>
     <div id="formRuote"></div>
     <div class="row" style="margin-top:12px;">
-      <button id="btnSalva">Salva in archivio</button>
-      <button class="secondary" id="btnPulisci">Pulisci campi</button>
+      <button id="btnSalva">Salva</button>
+      <button class="secondary" id="btnPulisci">Pulisci</button>
     </div>
     <div id="msgInserisci"></div>
   </div>
@@ -120,25 +137,35 @@
 <div id="view-archivio" class="view">
   <div class="panel">
     <p class="panel-title">Archivio estrazioni</p>
-    <div class="row" style="margin-bottom:12px;">
-      <button class="primary" id="btnRicarica">🔄 Ricarica da storico.txt</button>
+    <div class="row" style="margin-bottom:10px;">
+      <button class="primary" id="btnRicarica">🔄 Ricarica storico.txt</button>
     </div>
     <div id="msgStorico"></div>
     <div id="archivioContent"></div>
   </div>
 </div>
 
+<div id="view-statistiche" class="view">
+  <div class="panel">
+    <p class="panel-title">Statistiche del metodo</p>
+    <div id="statContent"><div class="empty">⏳ Calcolo in corso...</div></div>
+  </div>
+</div>
+
 <div class="contatti">
   <div class="contatti-titolo">Info e contatti</div>
   <div class="contatti-links">
-    <a href="https://wa.me/393388607242" target="_blank" class="btn-contatto btn-whatsapp">
-      💬 WhatsApp
-    </a>
-    <a href="tel:+393388607242" class="btn-contatto btn-chiama">
-      📞 Chiama
-    </a>
+    <a href="https://wa.me/393388607242" target="_blank" class="btn-contatto btn-whatsapp">💬 WhatsApp</a>
+    <a href="tel:+393388607242" class="btn-contatto btn-chiama">📞 Chiama</a>
   </div>
 </div>
+
+<nav class="bottomnav">
+  <div class="bnav active" data-view="previsione"><span class="ico">🎯</span>Previsione</div>
+  <div class="bnav" data-view="inserisci"><span class="ico">✏️</span>Inserisci</div>
+  <div class="bnav" data-view="archivio"><span class="ico">📚</span>Archivio</div>
+  <div class="bnav" data-view="statistiche"><span class="ico">📊</span>Statistiche</div>
+</nav>
 
 <script>
 const RUOTE = ["BA","CA","FI","GE","MI","NA","PA","RM","TO","VE","RN"];
@@ -146,8 +173,9 @@ const NOMI = ["Bari","Cagliari","Firenze","Genova","Milano","Napoli","Palermo","
 const STORAGE_KEY_MANUALI = "quaterna_manuali";
 const STORICO_URL = "./storico.txt";
 
-let storico = [];
-let manuali = [];
+let storico = [], manuali = [];
+let ARCH = [], INDICE = new Map(), VEDATES = [];
+let PREV_CURRENT = null, STATS_CACHE = null;
 
 function fuori90(n){ let v=n; while(v>90)v-=90; while(v<=0)v+=90; return v; }
 function calcolaFigura(n){ let s=Math.floor(n/10)+(n%10); if(s>9)s-=9; if(s===0)s=9; return s; }
@@ -192,54 +220,55 @@ function parseStorico(text){
   return list;
 }
 
-function archivioCompleto(){
+function aggiornaCache(){
   const mappa=new Map();
   for(const e of storico) mappa.set(e.data+"|"+e.ruota, e);
   for(const e of manuali) mappa.set(e.data+"|"+e.ruota, e);
-  return Array.from(mappa.values()).sort((a,b)=>a.data.localeCompare(b.data));
+  ARCH=Array.from(mappa.values()).sort((a,b)=>a.data.localeCompare(b.data));
+  INDICE=new Map(); for(const e of ARCH) INDICE.set(e.data+"|"+e.ruota, e);
+  VEDATES=[...new Set(ARCH.filter(e=>e.ruota==="VE").map(e=>e.data))].sort();
+  STATS_CACHE=null;
 }
 
 async function caricaManuali(){
   try { const v=localStorage.getItem(STORAGE_KEY_MANUALI); manuali=v?JSON.parse(v):[]; }
   catch(e){ manuali=[]; }
 }
-async function salvaManuali(){
-  localStorage.setItem(STORAGE_KEY_MANUALI, JSON.stringify(manuali));
-}
+async function salvaManuali(){ localStorage.setItem(STORAGE_KEY_MANUALI, JSON.stringify(manuali)); }
 
-async function ricaricaStorico() {
+async function ricaricaStorico(silenzioso) {
   const msgEl=document.getElementById("msgStorico");
-  msgEl.innerHTML='<div class="msg info">⏳ Scaricamento storico.txt...</div>';
+  if(!silenzioso) msgEl.innerHTML='<div class="msg info">⏳ Scaricamento storico.txt...</div>';
   try {
     const resp=await fetch(STORICO_URL+"?t="+Date.now());
     if(!resp.ok) throw new Error("HTTP "+resp.status);
     const text=await resp.text();
-    storico=parseStorico(text);
-    if(storico.length===0){
-      const prima=(text.split(/\r?\n/).find(l=>l.trim())||"(vuoto)").slice(0,100);
-      msgEl.innerHTML='<div class="msg err">❌ Formato non riconosciuto. Prima riga: <b>'+prima+'</b></div>';
+    const nuov=parseStorico(text);
+    if(nuov.length===0){
+      msgEl.innerHTML='<div class="msg err">❌ Formato non riconosciuto.</div>';
       return;
     }
-    msgEl.innerHTML='<div class="msg ok">✅ Caricate '+storico.length+' estrazioni da storico.txt</div>';
+    storico=nuov; aggiornaCache();
+    msgEl.innerHTML='<div class="msg ok">✅ '+storico.length+' estrazioni caricate</div>';
     renderTutto();
   } catch(e){
     msgEl.innerHTML='<div class="msg err">❌ Errore: '+e.message+'</div>';
   }
 }
 
-function trova5aEstrazione(arch, ruota, anno, mese){
+function trova5aEstrazione(anno, mese){
   const ms=anno+"/"+String(mese).padStart(2,'0');
-  const list=arch.filter(x=>x.ruota===ruota&&x.data.startsWith(ms)).sort((a,b)=>a.data.localeCompare(b.data));
-  return list.length>=5?list[4].data:null;
+  const list=VEDATES.filter(d=>d.startsWith(ms));
+  return list.length>=5?list[4]:null;
 }
 
-function calcolaPrevisione(dataTarget, arch){
-  const eVE=arch.find(x=>x.data===dataTarget&&x.ruota==="VE"); if(!eVE) return null;
+function calcolaPrevisione(dataTarget){
+  const eVE=INDICE.get(dataTarget+"|VE"); if(!eVE) return null;
   const fig=calcolaFigura(eVE.n2);
-  const eMI=arch.find(x=>x.data===dataTarget&&x.ruota==="MI");
-  const eGE=arch.find(x=>x.data===dataTarget&&x.ruota==="GE");
-  const eCA=arch.find(x=>x.data===dataTarget&&x.ruota==="CA");
-  const eBA=arch.find(x=>x.data===dataTarget&&x.ruota==="BA");
+  const eMI=INDICE.get(dataTarget+"|MI");
+  const eGE=INDICE.get(dataTarget+"|GE");
+  const eCA=INDICE.get(dataTarget+"|CA");
+  const eBA=INDICE.get(dataTarget+"|BA");
   let n1,n2,n3,n4;
   if(fig===1){ n1=fuori90(eVE.n2+68); n2=fuori90(eVE.n5+49);
     n3=eMI?fuori90(eMI.n2+32):fuori90(eVE.n2+32); n4=eGE?fuori90(eGE.n4+2):fuori90(eVE.n4+2);
@@ -253,15 +282,15 @@ function calcolaPrevisione(dataTarget, arch){
     quaterna:r.map(pad2).join("-"), esitiPlurimi:[], colpoMinimo:0, stato:"NEGATIVO", colpiGiocati:0 };
 }
 
-function verificaEsiti(res, dataInizio, arch){
+function verificaEsiti(res, dataInizio){
   const nums=[res.n1,res.n2,res.n3,res.n4];
-  const dateSuccessive=[...new Set(arch.filter(x=>x.data>dataInizio&&x.ruota==="VE").map(x=>x.data))].sort().slice(0,13);
+  const dateSuccessive=VEDATES.filter(d=>d>dataInizio).slice(0,13);
   res.colpiGiocati=dateSuccessive.length;
   let colpo=0;
   for(const d of dateSuccessive){
     colpo++;
     [["VE","VE"],["RN","NZ"]].forEach(([ruota,label])=>{
-      const estr=arch.find(x=>x.data===d&&x.ruota===ruota); if(!estr) return;
+      const estr=INDICE.get(d+"|"+ruota); if(!estr) return;
       const usciti=getNumeri(estr).filter(n=>nums.includes(n)).sort((a,b)=>a-b);
       if(usciti.length>=2){
         const str=usciti.map(pad2).join(".");
@@ -273,47 +302,131 @@ function verificaEsiti(res, dataInizio, arch){
   }
 }
 
-function badgeClass(s){ if(s==="QUATERNA")return "quaterna"; if(s==="TERNO"||s==="AMBO")return "win"; if(s==="NEGATIVO")return "negativo"; return "gioco"; }
+function statoInfo(p){
+  if(p.stato==="QUATERNA") return ["🏆 Quaterna secca al "+p.colpoMinimo+"° colpo","quaterna"];
+  if(p.stato==="TERNO") return ["🎉 Terno vincente al "+p.colpoMinimo+"° colpo","win"];
+  if(p.stato==="AMBO") return ["✅ Ambo vincente al "+p.colpoMinimo+"° colpo","win"];
+  if(p.colpiGiocati<13) return ["🎯 In gioco — colpo "+(p.colpiGiocati+1)+" di 13","gioco"];
+  return ["⛔ Scaduta — nessuna vincita in 13 colpi","negativo"];
+}
 
 function renderPrevisione(){
   const el=document.getElementById("view-previsione");
-  const arch=archivioCompleto();
-  if(storico.length===0 && manuali.length===0){
-    el.innerHTML='<div class="panel empty">Nessun dato.<br>Vai su "Archivio" e clicca "🔄 Ricarica da storico.txt".</div>';
+  if(ARCH.length===0){
+    el.innerHTML='<div class="panel empty">Nessun dato.<br>Vai su 📚 Archivio e clicca 🔄 Ricarica.</div>';
     return;
   }
   const oggi=new Date();
-  const dataTarget=trova5aEstrazione(arch,"VE",oggi.getFullYear(),oggi.getMonth()+1);
+  const dataTarget=trova5aEstrazione(oggi.getFullYear(),oggi.getMonth()+1);
   if(!dataTarget){
-    el.innerHTML='<div class="panel"><p class="panel-title">In attesa della 5&ordf; estrazione del mese su Venezia</p><p style="color:var(--testo-sec);font-size:13px;">Servono almeno 5 estrazioni di Venezia nel mese corrente ('+(oggi.getMonth()+1)+'/'+oggi.getFullYear()+').</p></div>';
+    el.innerHTML='<div class="panel"><p class="panel-title">In attesa della 5ª estrazione del mese su Venezia</p><p style="color:var(--testo-sec);font-size:13px;">Servono 5 estrazioni VE nel mese '+(oggi.getMonth()+1)+'/'+oggi.getFullYear()+'. Aggiorna storico.txt dopo ogni concorso.</p></div>';
     return;
   }
-  const archTronc=arch.filter(x=>x.data<=dataTarget);
-  const res=calcolaPrevisione(dataTarget,archTronc);
+  const res=calcolaPrevisione(dataTarget);
   if(!res){ el.innerHTML='<div class="panel">Dati VE non disponibili per '+dataTarget+'.</div>'; return; }
-  verificaEsiti(res,dataTarget,archTronc);
-  let statoHtml="";
-  if(res.stato!=="NEGATIVO"||res.colpiGiocati<13){
-    const cls=badgeClass(res.stato);
-    const label=res.stato==="QUATERNA"?"Quaterna secca al "+res.colpoMinimo+"° colpo"
-      :res.stato==="TERNO"?"Terno vincente al "+res.colpoMinimo+"° colpo"
-      :res.stato==="AMBO"?"Ambo vincente al "+res.colpoMinimo+"° colpo"
-      :"In gioco — colpo "+(res.colpiGiocati+1)+" di 13";
-    statoHtml='<span class="badge '+cls+'">'+label+'</span>';
-  } else { statoHtml='<span class="badge negativo">Scaduta — nessuna vincita in 13 colpi</span>'; }
-  const esitiHtml=res.esitiPlurimi.length?'<ul style="margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--testo-sec);">'+res.esitiPlurimi.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'';
-  el.innerHTML=`<div class="panel">
-    <p class="panel-title">5&ordf; estrazione Venezia: ${res.dataCalcolo} — Figura ${res.figura}</p>
-    <div class="num-grande">${res.quaterna}</div>
-    <p style="font-size:13px;color:var(--testo-sec);margin:8px 0 0;">Ruota: Venezia &middot; 13 estrazioni &middot; recupero su Nazionale</p>
-    <div style="margin-top:10px;">${statoHtml}</div>${esitiHtml}</div>`;
+  verificaEsiti(res,dataTarget);
+  PREV_CURRENT=res;
+  const [label,cls]=statoInfo(res);
+  const esitiHtml=res.esitiPlurimi.length?'<ul class="esiti">'+res.esitiPlurimi.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'';
+  el.innerHTML=`<div class="panel center">
+    <p class="panel-title" style="text-align:center;">5ª estrazione Venezia: ${res.dataCalcolo} — Figura ${res.figura}</p>
+    <div class="num-gigante">${res.quaterna}</div>
+    <p style="font-size:12px;color:var(--testo-sec);margin:0;">Ruota Venezia · 13 colpi · recupero Nazionale</p>
+    <div><span class="badge ${cls}">${label}</span></div>
+    ${esitiHtml}
+    <div style="margin-top:14px;"><button class="wa" id="btnShare">📤 Condividi su WhatsApp</button></div>
+  </div>`;
+  document.getElementById("btnShare").addEventListener("click", condividiWhatsApp);
+}
+
+function condividiWhatsApp(){
+  if(!PREV_CURRENT) return;
+  const p=PREV_CURRENT; const [label]=statoInfo(p);
+  const testo="🎰 *QUATERNA D'AUTORE*\n"
+    +"📅 5ª estrazione Venezia: "+p.dataCalcolo+" — Figura "+p.figura+"\n"
+    +"🎯 *"+p.quaterna.split("-").join(" - ")+"*\n"
+    +"📌 Ruota Venezia · 13 colpi · recupero Nazionale\n"
+    +"📊 "+label+"\n"
+    +"ℹ️ Info WhatsApp 338 8607242";
+  window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(testo), "_blank");
+}
+
+function computeStats(){
+  const mesi=[...new Set(VEDATES.map(d=>d.slice(0,7)))].sort();
+  const tot={prev:0,quaterne:0,terni:0,ambi:0,scadute:0,ingioco:0,colpiSomma:0,colpiCount:0,evQ:0,evT:0,evA:0};
+  const perAnno={}; const recenti=[];
+  for(const ms of mesi){
+    const list=VEDATES.filter(d=>d.startsWith(ms));
+    if(list.length<5) continue;
+    const target=list[4];
+    const res=calcolaPrevisione(target); if(!res) continue;
+    verificaEsiti(res,target);
+    tot.prev++;
+    const anno=target.slice(0,4);
+    if(!perAnno[anno]) perAnno[anno]={prev:0,q:0,t:0,a:0,sc:0};
+    perAnno[anno].prev++;
+    for(const ev of res.esitiPlurimi){
+      if(ev.startsWith("QUATERNA SECCA")){ tot.evQ++; }
+      else if(ev.startsWith("Terno")){ tot.evT++; }
+      else { tot.evA++; }
+    }
+    let esito;
+    if(res.stato==="QUATERNA"){ tot.quaterne++; perAnno[anno].q++; esito="QUATERNA"; }
+    else if(res.stato==="TERNO"){ tot.terni++; perAnno[anno].t++; esito="TERNO"; }
+    else if(res.stato==="AMBO"){ tot.ambi++; perAnno[anno].a++; esito="AMBO"; }
+    else if(res.colpiGiocati>=13){ tot.scadute++; perAnno[anno].sc++; esito="SCADUTA"; }
+    else { tot.ingioco++; esito="IN GIOCO"; }
+    if(res.colpoMinimo>0){ tot.colpiSomma+=res.colpoMinimo; tot.colpiCount++; }
+    recenti.push({target,quaterna:res.quaterna,esito,colpo:res.colpoMinimo});
+  }
+  return {tot,perAnno,recenti:recenti.slice(-14).reverse()};
+}
+
+function renderStatistiche(){
+  const el=document.getElementById("statContent");
+  if(!STATS_CACHE){
+    el.innerHTML='<div class="empty">⏳ Calcolo statistiche su tutto lo storico...</div>';
+    setTimeout(()=>{ STATS_CACHE=computeStats(); renderStatistiche(); }, 60);
+    return;
+  }
+  const {tot,perAnno,recenti}=STATS_CACHE;
+  const concluse=tot.quaterne+tot.terni+tot.ambi+tot.scadute;
+  const pct=concluse>0?Math.round((tot.quaterne+tot.terni+tot.ambi)/concluse*100):0;
+  const colpoMedio=tot.colpiCount>0?(tot.colpiSomma/tot.colpiCount).toFixed(1):"—";
+  let righeAnno="";
+  Object.keys(perAnno).sort().reverse().forEach(a=>{
+    const r=perAnno[a];
+    righeAnno+=`<tr><td style="font-weight:700;color:var(--oro);">${a}</td><td>${r.prev}</td><td style="color:var(--oro);">${r.q}</td><td style="color:var(--verde);">${r.t}</td><td style="color:var(--verde);">${r.a}</td><td style="color:var(--rosso);">${r.sc}</td></tr>`;
+  });
+  let righeRec="";
+  recenti.forEach(r=>{
+    const cls=r.esito==="QUATERNA"?"quaterna":(r.esito==="TERNO"||r.esito==="AMBO")?"win":r.esito==="SCADUTA"?"negativo":"gioco";
+    righeRec+=`<tr><td style="color:var(--oro);font-weight:600;">${r.target}</td><td style="font-weight:700;">${r.quaterna}</td><td><span class="badge ${cls}" style="margin:0;font-size:11px;padding:3px 8px;">${r.esito}</span></td></tr>`;
+  });
+  el.innerHTML=`
+    <div class="stat-grid">
+      <div class="stat"><div class="n">${tot.prev}</div><div class="l">Previsioni analizzate</div></div>
+      <div class="stat"><div class="n">${tot.quaterne}</div><div class="l">Quaterne secche</div></div>
+      <div class="stat"><div class="n">${tot.terni}</div><div class="l">Terni vinti</div></div>
+      <div class="stat"><div class="n">${tot.ambi}</div><div class="l">Ambi vinti</div></div>
+      <div class="stat"><div class="n">${tot.scadute}</div><div class="l">Scadute</div></div>
+      <div class="stat"><div class="n">${pct}%</div><div class="l">Vincite su concluse</div></div>
+      <div class="stat"><div class="n">${colpoMedio}</div><div class="l">Colpo medio vincente</div></div>
+      <div class="stat"><div class="n">${tot.ingioco}</div><div class="l">In gioco ora</div></div>
+    </div>
+    <p class="panel-title" style="margin-top:16px;">Eventi plurimi totali</p>
+    <p style="font-size:13px;color:var(--testo-sec);margin:0;">🏆 ${tot.evQ} quaterne secche · 🎉 ${tot.evT} terni · ✅ ${tot.evA} ambi (su VE + Nazionale)</p>
+    <p class="panel-title" style="margin-top:16px;">Storico per anno</p>
+    <div class="table-wrap"><table><thead><tr><th>Anno</th><th>Prev.</th><th>Quat.</th><th>Terni</th><th>Ambi</th><th>Scad.</th></tr></thead><tbody>${righeAnno}</tbody></table></div>
+    <p class="panel-title" style="margin-top:16px;">Ultime previsioni</p>
+    <div class="table-wrap"><table><thead><tr><th>5ª VE</th><th>Quaterna</th><th>Esito</th></tr></thead><tbody>${righeRec}</tbody></table></div>`;
 }
 
 function buildFormRuote(){
   const cont=document.getElementById("formRuote"); cont.innerHTML="";
   RUOTE.forEach((r,i)=>{
     const div=document.createElement("div"); div.className="form-grid";
-    div.innerHTML=`<div style="display:flex;align-items:center;font-size:13px;font-weight:${r==='VE'?'700':'400'};color:${r==='VE'?'var(--oro)':'var(--testo)'};">${r} (${NOMI[i]})</div>
+    div.innerHTML=`<div style="display:flex;align-items:center;font-size:12px;font-weight:${r==='VE'?'700':'400'};color:${r==='VE'?'var(--oro)':'var(--testo)'};">${r}</div>
       <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" data-r="${r}" data-i="1">
       <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" data-r="${r}" data-i="2">
       <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" data-r="${r}" data-i="3">
@@ -325,54 +438,52 @@ function buildFormRuote(){
 
 function renderArchivio(){
   const el=document.getElementById("archivioContent");
-  const arch=archivioCompleto();
-  if(arch.length===0){
-    el.innerHTML='<div class="empty">Nessuna estrazione.<br>Clicca "🔄 Ricarica da storico.txt".</div>';
-    return;
-  }
-  const dateUniche=[...new Set(arch.map(x=>x.data))].sort().reverse();
+  if(ARCH.length===0){ el.innerHTML='<div class="empty">Nessuna estrazione.<br>Clicca 🔄 Ricarica.</div>'; return; }
+  const dateUniche=[...new Set(ARCH.map(x=>x.data))].sort().reverse();
   let rows="";
   dateUniche.slice(0,100).forEach(d=>{
-    const estr=arch.filter(x=>x.data===d);
+    const estr=ARCH.filter(x=>x.data===d);
     const rs=estr.map(e=>e.ruota+": "+getNumeri(e).map(pad2).join(" ")).join(" &nbsp;|&nbsp; ");
-    rows+=`<tr><td style="text-align:left;font-weight:600;color:var(--oro);white-space:nowrap;">${d}</td><td style="text-align:left;font-size:12px;">${rs}</td></tr>`;
+    rows+=`<tr><td style="text-align:left;font-weight:600;color:var(--oro);white-space:nowrap;">${d}</td><td style="text-align:left;font-size:11px;">${rs}</td></tr>`;
   });
-  const extra=dateUniche.length>100?'<tr><td colspan="2" style="color:var(--testo-sec);font-size:12px;">... mostrate le ultime 100 date su '+dateUniche.length+' totali</td></tr>':'';
+  const extra=dateUniche.length>100?'<tr><td colspan="2" style="color:var(--testo-sec);font-size:11px;">... ultime 100 date su '+dateUniche.length+'</td></tr>':'';
   el.innerHTML=`<div class="stat-grid">
-      <div class="stat"><div class="n">${dateUniche.length}</div><div class="l">Date totali</div></div>
-      <div class="stat"><div class="n">${arch.length}</div><div class="l">Estrazioni totali</div></div>
-      <div class="stat"><div class="n">${storico.length}</div><div class="l">Da storico.txt</div></div>
-      <div class="stat"><div class="n">${manuali.length}</div><div class="l">Inserite a mano</div></div>
+      <div class="stat"><div class="n">${dateUniche.length}</div><div class="l">Date</div></div>
+      <div class="stat"><div class="n">${ARCH.length}</div><div class="l">Estrazioni</div></div>
+      <div class="stat"><div class="n">${manuali.length}</div><div class="l">A mano</div></div>
     </div>
-    <div class="table-wrap" style="margin-top:14px;">
+    <div class="table-wrap" style="margin-top:12px;">
       <table><thead><tr><th>Data</th><th style="text-align:left;">Ruote</th></tr></thead>
       <tbody>${rows}${extra}</tbody></table>
     </div>
     <div class="row" style="margin-top:12px;">
-      <button class="danger" id="btnCancellaManuali">Cancella solo le inserite a mano</button>
+      <button class="danger" id="btnCancellaManuali">Cancella inserite a mano</button>
     </div>`;
   document.getElementById("btnCancellaManuali").addEventListener("click", async ()=>{
-    if(confirm("Cancellare le estrazioni inserite a mano? Quelle di storico.txt restano.")){
-      manuali=[]; await salvaManuali(); renderTutto();
+    if(confirm("Cancellare le estrazioni inserite a mano?")){
+      manuali=[]; await salvaManuali(); aggiornaCache(); renderTutto();
     }
   });
 }
 
-function renderTutto(){ renderPrevisione(); renderArchivio(); }
+function renderTutto(){ renderPrevisione(); renderArchivio(); if(document.getElementById("view-statistiche").classList.contains("active")) renderStatistiche(); }
 
-document.querySelectorAll(".tab").forEach(tab=>{
-  tab.addEventListener("click",()=>{
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+document.querySelectorAll(".bnav").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".bnav").forEach(t=>t.classList.remove("active"));
     document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
-    tab.classList.add("active");
-    document.getElementById("view-"+tab.dataset.view).classList.add("active");
+    b.classList.add("active");
+    document.getElementById("view-"+b.dataset.view).classList.add("active");
+    if(b.dataset.view==="statistiche") renderStatistiche();
+    window.scrollTo(0,0);
   });
 });
+
 document.getElementById("btnPulisci").addEventListener("click",()=>{
   document.querySelectorAll("#formRuote input").forEach(i=>i.value="");
   document.getElementById("msgInserisci").innerHTML="";
 });
-document.getElementById("btnRicarica").addEventListener("click", ricaricaStorico);
+document.getElementById("btnRicarica").addEventListener("click",()=>ricaricaStorico(false));
 
 document.getElementById("btnSalva").addEventListener("click", async ()=>{
   const msgEl=document.getElementById("msgInserisci");
@@ -394,7 +505,7 @@ document.getElementById("btnSalva").addEventListener("click", async ()=>{
   });
   if(err){ msgEl.innerHTML='<div class="msg err">'+err+'</div>'; return; }
   if(count===0){ msgEl.innerHTML='<div class="msg err">Inserisci almeno una ruota.</div>'; return; }
-  await salvaManuali();
+  await salvaManuali(); aggiornaCache();
   msgEl.innerHTML='<div class="msg ok">Salvate '+count+' ruote del '+dataFmt+'.</div>';
   document.querySelectorAll("#formRuote input").forEach(i=>i.value="");
   renderTutto();
@@ -404,8 +515,13 @@ document.getElementById("btnSalva").addEventListener("click", async ()=>{
   buildFormRuote();
   document.getElementById("dataInput").valueAsDate=new Date();
   await caricaManuali();
-  await ricaricaStorico();
+  aggiornaCache();
+  await ricaricaStorico(true);
   renderTutto();
+  window.addEventListener("load",()=>{
+    setTimeout(()=>{ const s=document.getElementById("splash"); if(s){ s.classList.add("hide"); setTimeout(()=>s.remove(),600); } },1400);
+  });
+  setTimeout(()=>{ const s=document.getElementById("splash"); if(s){ s.classList.add("hide"); setTimeout(()=>s.remove(),600); } },3500);
 })();
 </script>
 <script>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Quaterna d'Autore</title>
+<style>
+  :root{ --bg:#0a0a12;--panel:#16161f;--panel2:#1e222a;--border:#343a46;--oro:#ffd369;--verde:#00e676;--rosso:#e57373;--testo:#e4e4ee;--sec:#8c8ca0; }
+  *{box-sizing:border-box;} body{margin:0;background:var(--bg);color:var(--testo);font-family:-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px;max-width:900px;margin:0 auto;}
+  h1{color:var(--oro);font-size:22px;} .sec{color:var(--sec);font-size:13px;}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;}
+  label{display:block;color:var(--sec);font-size:13px;margin:10px 0 4px;}
+  input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--testo);padding:10px;border-radius:8px;font-size:15px;font-family:inherit;}
+  textarea{min-height:200px;font-family:monospace;font-size:12px;}
+  button{background:var(--oro);color:#0a0a12;border:none;padding:12px 20px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;margin-top:10px;}
+  button.sec{background:var(--panel2);color:var(--testo);border:1px solid var(--border);}
+  button.danger{background:transparent;color:var(--rosso);border:1px solid var(--rosso);}
+  .row{display:flex;gap:8px;flex-wrap:wrap;} .row>*{flex:1;min-width:140px;}
+  .codice{background:#0f1115;border:2px dashed var(--oro);border-radius:8px;padding:14px;font-size:20px;font-weight:800;color:var(--oro);text-align:center;letter-spacing:2px;margin:12px 0;word-break:break-all;}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;}
+  th{background:#0f1115;padding:8px 6px;text-align:left;} td{padding:8px 6px;border-bottom:1px solid var(--border);}
+  .ok{color:var(--verde);} .ko{color:var(--rosso);}
+  .msg{padding:10px;border-radius:8px;margin-top:10px;font-size:13px;}
+  .msg.ok{background:rgba(0,230,118,.1);color:var(--verde);} .msg.err{background:rgba(229,115,115,.1);color:var(--rosso);}
+  code{background:#0f1115;padding:2px 6px;border-radius:4px;font-size:12px;}
+</style>
+</head>
+<body>
+<h1>🔐 Admin · Gestione Licenze</h1>
+<p class="sec">Pagina riservata. Genera codici, gestisci scadenze, esporta il JSON da caricare su GitHub.</p>
+
+<div class="panel">
+  <p style="color:var(--oro);font-weight:600;margin:0 0 6px;">➕ Genera nuova licenza</p>
+  <div class="row">
+    <div><label>Nome cliente</label><input id="nome" placeholder="Mario Rossi"></div>
+    <div><label>Durata</label>
+      <select id="durata">
+        <option value="30">1 mese (30 gg)</option>
+        <option value="90">3 mesi (90 gg)</option>
+        <option value="180">6 mesi (180 gg)</option>
+        <option value="365" selected>1 anno (365 gg)</option>
+        <option value="3">Prova 3 giorni</option>
+      </select>
+    </div>
+  </div>
+  <button onclick="genera()">🎟️ Genera codice</button>
+  <div id="risultato"></div>
+</div>
+
+<div class="panel">
+  <p style="color:var(--oro);font-weight:600;margin:0 0 6px;">📋 Licenze attuali (<span id="count">0</span>)</p>
+  <p class="sec">Carica qui sotto il contenuto del tuo <code>licenze.json</code> attuale per vederlo e modificarlo.</p>
+  <label>Incolla qui il JSON attuale (o lascia vuoto per partire da zero)</label>
+  <textarea id="jsonIn" placeholder='{"licenze":[ ... ]}'></textarea>
+  <div class="row">
+    <button class="sec" onclick="caricaJson()">📥 Carica e analizza</button>
+    <button class="sec" onclick="scaricaJson()">💾 Scarica licenze.json</button>
+  </div>
+  <div id="tabella"></div>
+</div>
+
+<div class="panel">
+  <p style="color:var(--oro);font-weight:600;margin:0 0 6px;">📤 JSON pronto da caricare su GitHub</p>
+  <p class="sec">Copia questo contenuto e sostituiscilo nel file <code>licenze.json</code> del repo → Commit.</p>
+  <textarea id="jsonOut" readonly></textarea>
+  <button onclick="copiaJson()">📋 Copia JSON</button>
+  <div id="msgCopiato"></div>
+</div>
+
+<script>
+let licenze = [];
+
+function oggiISO(){ return new Date().toISOString().slice(0,10); }
+function plusDays(n){ const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+function randCode(){
+  const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s="";
+  for(let i=0;i<8;i++) s+=c[Math.floor(Math.random()*c.length)];
+  return "QA-"+s.slice(0,4)+"-"+s.slice(4);
+}
+
+function genera(){
+  const nome=document.getElementById("nome").value.trim();
+  const gg=parseInt(document.getElementById("durata").value);
+  if(!nome){ document.getElementById("risultato").innerHTML='<div class="msg err">Inserisci il nome del cliente.</div>'; return; }
+  const codice=randCode();
+  const scadenza=plusDays(gg);
+  licenze.push({codice,cliente:nome,scadenza});
+  const msgWA="🎰 *QUATERNA D'AUTORE* — attivazione\n\nCiao "+nome+", ecco il tuo codice di accesso:\n\n🔑 *"+codice+"*\n📅 Valido fino al: "+scadenza.split("-").reverse().join("/")+"\n\n1️⃣ Apri: https://carinimaurizio2-code.github.io/archivio-lotto/\n2️⃣ Inserisci il codice quando richiesto\n3️⃣ Goditi le previsioni! 🍀\n\nInfo: 338 8607242";
+  document.getElementById("risultato").innerHTML=
+    '<div class="codice">'+codice+'</div>'+
+    '<p class="sec" style="margin:0;">Cliente: <b style="color:var(--testo);">'+nome+'</b> · Scadenza: <b style="color:var(--testo);">'+scadenza+'</b></p>'+
+    '<div class="row"><button onclick="copiaTesto(\''+codice+'\')">📋 Copia codice</button>'+
+    '<button class="sec" onclick=\'apriWA('+JSON.stringify(msgWA)+')\'>📲 Invia su WhatsApp</button></div>'+
+    '<div class="msg ok">✅ Licenza aggiunta. Ricorda di scaricare/caricare il JSON su GitHub!</div>';
+  aggiornaOutput();
+}
+
+function copiaTesto(t){ navigator.clipboard.writeText(t).then(()=>alert("Copiato: "+t)); }
+function apriWA(t){ window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(t),"_blank"); }
+
+function caricaJson(){
+  const txt=document.getElementById("jsonIn").value.trim();
+  if(!txt){ licenze=[]; aggiornaOutput(); return; }
+  try{
+    const obj=JSON.parse(txt);
+    licenze=obj.licenze||[];
+    aggiornaOutput();
+    document.getElementById("tabella").innerHTML='<div class="msg ok">✅ Caricate '+licenze.length+' licenze.</div>'+renderTabella();
+  }catch(e){ document.getElementById("tabella").innerHTML='<div class="msg err">❌ JSON non valido: '+e.message+'</div>'; }
+}
+
+function renderTabella(){
+  if(licenze.length===0) return '<p class="sec">Nessuna licenza.</p>';
+  const oggi=oggiISO();
+  let r='<table><thead><tr><th>Codice</th><th>Cliente</th><th>Scadenza</th><th>Stato</th><th></th></tr></thead><tbody>';
+  licenze.forEach((l,i)=>{
+    const scad=l.scadenza<oggi;
+    const ggRimasti=Math.ceil((new Date(l.scadenza)-new Date(oggi))/86400000);
+    const stato=scad?'<span class="ko">⛔ Scaduta</span>':(ggRimasti<=7?'<span class="ko">⚠️ '+ggRimasti+' gg</span>':'<span class="ok">✅ '+ggRimasti+' gg</span>');
+    r+='<tr><td style="font-weight:700;color:var(--oro);">'+l.codice+'</td><td>'+l.cliente+'</td><td>'+l.scadenza+'</td><td>'+stato+'</td><td><button class="danger" style="padding:4px 10px;margin:0;font-size:12px;" onclick="rimuovi('+i+')">🗑️</button></td></tr>';
+  });
+  return r+'</tbody></table>';
+}
+
+function rimuovi(i){
+  if(confirm("Eliminare la licenza "+licenze[i].codice+"?")){
+    licenze.splice(i,1); aggiornaOutput();
+  }
+}
+
+function aggiornaOutput(){
+  document.getElementById("jsonOut").value=JSON.stringify({licenze},null,2);
+  document.getElementById("count").textContent=licenze.length;
+  if(document.getElementById("jsonIn").value.trim()){}
+  document.getElementById("tabella").innerHTML=renderTabella();
+}
+
+function copiaJson(){
+  const t=document.getElementById("jsonOut").value;
+  navigator.clipboard.writeText(t).then(()=>{
+    document.getElementById("msgCopiato").innerHTML='<div class="msg ok">✅ JSON copiato! Ora incollalo in licenze.json su GitHub.</div>';
+  });
+}
+
+function scaricaJson(){
+  const blob=new Blob([document.getElementById("jsonOut").value],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="licenze.json"; a.click();
+}
+
+aggiornaOutput();
+</script>
+</body>
+</html>

@@ -12,17 +12,17 @@
   .pt{color:var(--oro);font-weight:700;font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px;}
   label{display:block;color:var(--sec);font-size:12px;margin:10px 0 4px;font-weight:600;}
   input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--testo);padding:12px;border-radius:8px;font-size:16px;font-family:inherit;}
-  textarea{min-height:140px;font-family:monospace;font-size:12px;resize:vertical;}
+  textarea{min-height:130px;font-family:monospace;font-size:12px;resize:vertical;}
   button{background:var(--oro);color:#0a0a12;border:none;padding:13px 18px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;width:100%;margin-top:8px;}
   button:active{transform:scale(.98);}
   button.sec{background:var(--panel2);color:var(--testo);border:1px solid var(--border);}
-  button.danger{background:transparent;color:var(--rosso);border:1px solid var(--rosso);padding:8px 12px;font-size:13px;width:auto;}
-  button.ok{background:var(--verde);color:#0a0a12;}
+  button.danger{background:transparent;color:var(--rosso);border:1px solid var(--rosso);padding:8px 12px;font-size:13px;width:auto;margin:0;}
+  button.mini{background:var(--panel2);color:var(--testo);border:1px solid var(--border);padding:8px 10px;font-size:13px;width:auto;margin:0;}
   .row{display:flex;gap:8px;flex-wrap:wrap;} .row>*{flex:1;min-width:130px;}
   .codice{background:#0f1115;border:2px dashed var(--oro);border-radius:10px;padding:16px;font-size:24px;font-weight:800;color:var(--oro);text-align:center;letter-spacing:2px;margin:12px 0;word-break:break-all;user-select:all;}
   table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
   th{background:#0f1115;padding:8px 6px;text-align:left;font-size:11px;color:var(--sec);} td{padding:9px 6px;border-bottom:1px solid var(--border);vertical-align:middle;}
-  .ok-t{color:var(--verde);font-weight:700;} .ko-t{color:var(--rosso);font-weight:700;}
+  .ok-t{color:var(--verde);font-weight:700;} .ko-t{color:var(--rosso);font-weight:700;} .vita-t{color:var(--azzurro);font-weight:700;}
   .msg{padding:11px;border-radius:8px;margin-top:10px;font-size:13px;font-weight:600;}
   .msg.ok{background:rgba(0,230,118,.12);color:var(--verde);} .msg.err{background:rgba(229,115,115,.12);color:var(--rosso);} .msg.info{background:rgba(100,181,246,.12);color:var(--azzurro);}
   code{background:#0f1115;padding:2px 6px;border-radius:4px;font-size:11px;}
@@ -31,18 +31,20 @@
   .stat .n{font-size:18px;font-weight:800;color:var(--oro);} .stat .l{font-size:10px;color:var(--sec);}
   .key-cell{font-weight:800;color:var(--oro);letter-spacing:1px;font-size:13px;}
   .req-cell{font-family:monospace;font-size:11px;color:var(--sec);}
+  .obbl{background:rgba(229,115,115,.12);border:1px solid var(--rosso);border-radius:10px;padding:12px;font-size:13px;font-weight:700;color:var(--rosso);margin-top:12px;}
   @media(max-width:600px){ table,thead,tbody,tr,td,th{display:block;} thead{display:none;} tr{margin-bottom:10px;background:var(--panel2);border-radius:8px;padding:6px;} td{border:none;padding:5px 8px;text-align:left;} td:before{content:attr(data-l);color:var(--sec);font-size:10px;display:block;} }
 </style>
 </head>
 <body>
 <h1>🔐 Gestore Licenze</h1>
-<p class="sub">Quaterna d'Autore · funziona da PC e telefono</p>
+<p class="sub">Quaterna d'Autore · funziona da PC e telefono · <a href="https://carinimaurizio2-code.github.io/archivio-lotto/admin.html" style="color:var(--azzurro);">apri sempre questo link</a></p>
 
 <div class="stat-row">
   <div class="stat"><div class="n" id="sTot">0</div><div class="l">Totali</div></div>
   <div class="stat"><div class="n" id="sAttive" style="color:var(--verde)">0</div><div class="l">Attive</div></div>
+  <div class="stat"><div class="n" id="sVita" style="color:var(--azzurro)">0</div><div class="l">A vita</div></div>
   <div class="stat"><div class="n" id="sScad" style="color:var(--rosso)">0</div><div class="l">Scadute</div></div>
-  <div class="stat"><div class="n" id="sSoon" style="color:var(--azzurro)">0</div><div class="l">≤ 7 giorni</div></div>
+  <div class="stat"><div class="n" id="sSoon" style="color:var(--oro)">0</div><div class="l">≤ 7 giorni</div></div>
 </div>
 
 <div class="panel">
@@ -54,10 +56,11 @@
     <div><label>Durata</label>
       <select id="durata">
         <option value="3">Prova 3 giorni</option>
-        <option value="30" selected>1 mese</option>
+        <option value="30">1 mese</option>
         <option value="90">3 mesi</option>
         <option value="180">6 mesi</option>
         <option value="365">1 anno</option>
+        <option value="vita" selected>♾️ A VITA</option>
       </select>
     </div>
   </div>
@@ -74,43 +77,58 @@
 </div>
 
 <div class="panel">
-  <p class="pt">📤 JSON da pubblicare su GitHub</p>
-  <p style="color:var(--sec);font-size:12px;margin:0 0 8px;">Dopo ogni modifica: <b style="color:var(--testo);">copia questo JSON</b> → GitHub → <code>licenze.json</code> → matita ✏️ → incolla → Commit. <span style="color:var(--rosso);">Senza questo passaggio il cliente non si attiva!</span></p>
+  <p class="pt">📤 Pubblica su GitHub</p>
+  <p style="color:var(--sec);font-size:12px;margin:0 0 8px;">Il JSON qui sotto è quello da mettere nel file <code>licenze.json</code> su GitHub. <b style="color:var(--rosso);">Senza il Commit il cliente NON riesce ad attivarsi!</b></p>
   <textarea id="jsonOut" readonly></textarea>
   <div class="row">
     <button onclick="copiaJson()">📋 COPIA JSON</button>
-    <button class="sec" onclick="scaricaJson()">💾 SCARICA</button>
+    <button class="sec" onclick="scaricaJson()">💾 SCARICA FILE</button>
   </div>
+  <button class="sec" onclick="verificaPubblicazione()">🌐 VERIFICA SE È PUBBLICATO SU GITHUB</button>
   <div id="msgCopiato"></div>
 </div>
 
 <script>
 let licenze=[];
 const LS_ADMIN="quaterna_admin_licenze";
-
 function salvaLocale(){ try{ localStorage.setItem(LS_ADMIN, JSON.stringify(licenze)); }catch(e){} }
 function caricaLocale(){ try{ const v=localStorage.getItem(LS_ADMIN); if(v) licenze=JSON.parse(v)||[]; }catch(e){} }
 function plusDays(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);}
 function randBlock(){const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<4;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
 function oggiISO(){return new Date().toISOString().slice(0,10);}
+function nuovaChiave(){return "KEY-"+randBlock()+"-"+randBlock();}
+function isVita(l){ return (l.scadenza||"")>="2099-01-01"; }
 
 function genera(){
   const req=document.getElementById("req").value.trim().toUpperCase();
   const nome=document.getElementById("nome").value.trim();
-  const gg=parseInt(document.getElementById("durata").value);
+  const dur=document.getElementById("durata").value;
   const out=document.getElementById("risultato");
   if(!req.startsWith("REQ-")||req.length<10){out.innerHTML='<div class="msg err">❌ Codice richiesta non valido (deve iniziare con REQ-)</div>';return;}
   if(!nome){out.innerHTML='<div class="msg err">❌ Inserisci il nome del cliente</div>';return;}
-  if(licenze.some(l=>l.richiesta===req)){out.innerHTML='<div class="msg err">⚠️ Esiste già una chiave per questo REQ (vedi tabella sotto)</div>';return;}
-  const chiave="KEY-"+randBlock()+"-"+randBlock();
-  const scadenza=plusDays(gg);
-  licenze.push({richiesta:req,chiave,cliente:nome,scadenza});
+  const scadenza = dur==="vita" ? "2099-12-31" : plusDays(parseInt(dur));
+  const chiave = nuovaChiave();
+  const esist = licenze.find(l=>l.richiesta===req);
+  if(esist){
+    if(!confirm("Esiste già una chiave per questo REQ:\n"+esist.chiave+" ("+esist.cliente+")\n\nGenerarne una NUOVA che SOSTITUISCE la vecchia?")) return;
+    esist.chiave=chiave; esist.scadenza=scadenza; esist.cliente=nome;
+  } else {
+    licenze.push({richiesta:req,chiave,cliente:nome,scadenza});
+  }
   salvaLocale();
+  const durTxt = dur==="vita" ? "♾️ A VITA" : "fino al "+scadenza.split("-").reverse().join("/");
   out.innerHTML='<div class="codice">'+chiave+'</div>'
-    +'<p style="color:var(--sec);font-size:12px;margin:0;text-align:center;">Cliente: <b style="color:var(--testo);">'+nome+'</b> · Scadenza: <b style="color:var(--testo);">'+scadenza.split("-").reverse().join("/")+'</b></p>'
-    +'<button onclick="copiaTesto(\''+chiave+'\',\'Chiave copiata! Ora COPIA IL JSON in fondo e caricalo su GitHub.\')">📋 COPIA CHIAVE</button>'
-    +'<div class="msg info">👉 Ora manda questa chiave al cliente come preferisci (WhatsApp, SMS, a voce...). Poi COPIA IL JSON qui sotto e caricalo su GitHub.</div>';
+    +'<p style="color:var(--sec);font-size:12px;margin:0;text-align:center;">Cliente: <b style="color:var(--testo);">'+nome+'</b> · Durata: <b style="color:var(--testo);">'+durTxt+'</b></p>'
+    +'<button onclick="copiaTesto(\''+chiave+'\',\'✅ Chiave copiata! Ora PUBBLICA il JSON su GitHub.\')">📋 COPIA CHIAVE</button>'
+    +'<div class="obbl">⚠️ PASSO OBBLIGATORIO: vai qui sotto → 📋 COPIA JSON → GitHub → licenze.json → incolla → Commit. Senza questo il cliente NON si attiva!</div>';
   aggiornaOutput();
+}
+
+function rigenera(i){
+  const l=licenze[i];
+  if(!confirm("Generare una NUOVA chiave per "+l.cliente+"?\nLa vecchia ("+l.chiave+") smetterà di funzionare.")) return;
+  l.chiave=nuovaChiave(); salvaLocale(); aggiornaOutput();
+  copiaTesto(l.chiave,"✅ Nuova chiave copiata! Ricorda di pubblicare il JSON.");
 }
 
 function copiaTesto(t,msg){
@@ -130,19 +148,27 @@ function caricaJson(){
 function renderTabella(){
   if(licenze.length===0) return '<p style="color:var(--sec);text-align:center;padding:16px;">Nessuna licenza. Generane una sopra o carica un JSON.</p>';
   const oggi=oggiISO();
-  let r='<table><thead><tr><th>Cliente</th><th>Richiesta</th><th>Chiave</th><th>Scadenza</th><th>Stato</th><th></th></tr></thead><tbody>';
+  let r='<table><thead><tr><th>Cliente</th><th>Richiesta</th><th>Chiave</th><th>Scadenza</th><th>Stato</th><th>Azioni</th></tr></thead><tbody>';
   licenze.slice().reverse().forEach((l)=>{
     const i=licenze.indexOf(l);
-    const gg=Math.ceil((new Date(l.scadenza)-new Date(oggi))/86400000);
-    let stato,cls; if(gg<0){stato="⛔ Scaduta";cls="ko-t";} else if(gg<=7){stato="⚠️ "+gg+" gg";cls="ko-t";} else {stato="✅ "+gg+" gg";cls="ok-t";}
+    let stato,cls,scadTxt;
+    if(isVita(l)){ stato="♾️ A vita"; cls="vita-t"; scadTxt="A VITA"; }
+    else{
+      const gg=Math.ceil((new Date(l.scadenza)-new Date(oggi))/86400000);
+      scadTxt=l.scadenza.split("-").reverse().join("/");
+      if(gg<0){stato="⛔ Scaduta";cls="ko-t";} else if(gg<=7){stato="⚠️ "+gg+" gg";cls="ko-t";} else {stato="✅ "+gg+" gg";cls="ok-t";}
+    }
     r+='<tr>'
       +'<td data-l="Cliente"><b>'+l.cliente+'</b></td>'
       +'<td data-l="Richiesta" class="req-cell">'+l.richiesta+'</td>'
-      +'<td data-l="Chiave" class="key-cell">'+l.chiave+' <span style="cursor:pointer;font-size:14px;" onclick="copiaTesto(\''+l.chiave+'\',\'Chiave copiata!\')">📋</span></td>'
-      +'<td data-l="Scadenza">'+l.scadenza.split("-").reverse().join("/")+'</td>'
+      +'<td data-l="Chiave" class="key-cell">'+l.chiave+'</td>'
+      +'<td data-l="Scadenza">'+scadTxt+'</td>'
       +'<td data-l="Stato" class="'+cls+'">'+stato+'</td>'
-      +'<td data-l=""><button class="danger" onclick="rimuovi('+i+')">🗑️</button></td>'
-      +'</tr>';
+      +'<td data-l="Azioni" style="white-space:nowrap;">'
+        +'<button class="mini" onclick="copiaTesto(\''+l.chiave+'\',\'✅ Chiave copiata!\')">📋</button> '
+        +'<button class="mini" onclick="rigenera('+i+')">🔄</button> '
+        +'<button class="danger" onclick="rimuovi('+i+')">🗑️</button>'
+      +'</td></tr>';
   });
   return r+'</tbody></table>';
 }
@@ -157,22 +183,45 @@ function aggiornaOutput(){
   document.getElementById("jsonOut").value=JSON.stringify({licenze},null,2);
   document.getElementById("tabella").innerHTML=renderTabella();
   const oggi=oggiISO();
-  let att=0,scad=0,soon=0;
-  licenze.forEach(l=>{ const gg=Math.ceil((new Date(l.scadenza)-new Date(oggi))/86400000); if(gg<0)scad++; else {att++; if(gg<=7)soon++;} });
+  let att=0,scad=0,soon=0,vita=0;
+  licenze.forEach(l=>{
+    if(isVita(l)){vita++;att++;return;}
+    const gg=Math.ceil((new Date(l.scadenza)-new Date(oggi))/86400000);
+    if(gg<0)scad++; else {att++; if(gg<=7)soon++;}
+  });
   document.getElementById("sTot").textContent=licenze.length;
   document.getElementById("sAttive").textContent=att;
+  document.getElementById("sVita").textContent=vita;
   document.getElementById("sScad").textContent=scad;
   document.getElementById("sSoon").textContent=soon;
 }
 
 function copiaJson(){
-  const t=document.getElementById("jsonOut").value;
-  copiaTesto(t,"✅ JSON copiato! Ora incollalo in licenze.json su GitHub → Commit.");
-  document.getElementById("msgCopiato").innerHTML='<div class="msg ok">✅ JSON copiato negli appunti. Incollalo su GitHub!</div>';
+  copiaTesto(document.getElementById("jsonOut").value,"✅ JSON copiato! Incollalo in licenze.json su GitHub → Commit.");
+  document.getElementById("msgCopiato").innerHTML='<div class="msg ok">✅ JSON copiato. Ora: GitHub → licenze.json → matita ✏️ → incolla → Commit.</div>';
 }
 function scaricaJson(){
   const b=new Blob([document.getElementById("jsonOut").value],{type:"application/json"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="licenze.json"; a.click();
+}
+
+async function verificaPubblicazione(){
+  const el=document.getElementById("msgCopiato");
+  el.innerHTML='<div class="msg info">⏳ Controllo licenze.json su GitHub...</div>';
+  try{
+    const r=await fetch("./licenze.json?t="+Date.now());
+    if(!r.ok) throw 0;
+    const j=await r.json(); const rem=j.licenze||[];
+    if(licenze.length===0){ el.innerHTML='<div class="msg info">Nessuna licenza locale da controllare.</div>'; return; }
+    let html='<div class="msg ok" style="font-weight:700;">Esito verifica:</div>';
+    licenze.forEach(l=>{
+      const ok=rem.some(x=>x.chiave===l.chiave&&x.richiesta===l.richiesta);
+      html+='<div class="msg '+(ok?"ok":"err")+'">'+(ok?"✅":"❌")+' '+l.cliente+' — '+l.chiave+(ok?" → pubblicata, il cliente PUÒ attivarsi":" → NON pubblicata! Fai Commit del JSON!")+'</div>';
+    });
+    el.innerHTML=html;
+  }catch(e){
+    el.innerHTML='<div class="msg err">❌ Non riesco a leggere licenze.json su GitHub: il file non esiste o non è stato ancora fatto il Commit.</div>';
+  }
 }
 
 caricaLocale();

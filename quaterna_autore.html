@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="icon-512.png">
 <link rel="icon" type="image/png" href="icon-512.png">
 <style>
-  :root{ --bg:#0a0a12;--panel:#16161f;--panel-2:#1e222a;--panel-3:#262a33;--border:#343a46;--oro:#ffd369;--oro-chiaro:#fac863;--verde:#00e676;--azzurro:#64b5f6;--rosso:#e57373;--testo:#e4e4ee;--testo-sec:#8c8ca0;--wa:#25d366; }
+  :root{--bg:#0a0a12;--panel:#16161f;--panel-2:#1e222a;--panel-3:#262a33;--border:#343a46;--oro:#ffd369;--oro-chiaro:#fac863;--verde:#00e676;--azzurro:#64b5f6;--rosso:#e57373;--testo:#e4e4ee;--testo-sec:#8c8ca0;--wa:#25d366;}
   *{box-sizing:border-box;} html{-webkit-text-size-adjust:100%;}
   body{margin:0;background:var(--bg);color:var(--testo);font-family:-apple-system,"Segoe UI",Roboto,sans-serif;padding:12px 12px 78px;max-width:1100px;margin:0 auto;}
   .header{display:flex;align-items:center;gap:12px;margin:4px 0 12px;}
@@ -56,16 +56,15 @@
   .btn-contatto{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;border:1px solid var(--border);}
   .btn-whatsapp{background:rgba(37,211,102,.15);color:var(--wa);border-color:var(--wa);} .btn-chiama{background:rgba(100,181,246,.15);color:var(--azzurro);border-color:var(--azzurro);}
   ul.esiti{margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--testo-sec);}
-  /* === LICENZE === */
-  #gate{position:fixed;inset:0;z-index:10000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;}
+  #gate{position:fixed;inset:0;z-index:10000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
   #gate.hide{display:none;}
-  .gate-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:420px;width:100%;text-align:center;}
-  .gate-card img{width:90px;height:90px;border-radius:18px;margin-bottom:12px;}
+  .gate-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:22px;max-width:430px;width:100%;text-align:center;}
+  .gate-card img{width:84px;height:84px;border-radius:18px;margin-bottom:10px;}
   .gate-card h2{color:var(--oro);margin:0 0 6px;font-size:20px;}
-  .gate-card p{color:var(--testo-sec);font-size:13px;margin:0 0 16px;}
-  #codiceInput{font-size:18px;letter-spacing:2px;text-transform:uppercase;text-align:center;font-weight:700;}
-  .gate-scad{margin-top:12px;padding:10px;border-radius:8px;font-size:13px;}
-  .gate-scad.warn{background:rgba(229,115,115,.12);color:var(--rosso);} .gate-scad.ok{background:rgba(0,230,118,.1);color:var(--verde);}
+  .gate-card p{color:var(--testo-sec);font-size:13px;margin:0 0 14px;}
+  .gate-step{color:var(--testo);font-size:13px;font-weight:700;text-align:left;margin:14px 0 6px;}
+  .codice-req{background:#0f1115;border:2px dashed var(--oro);border-radius:10px;padding:12px;font-size:22px;font-weight:800;color:var(--oro);letter-spacing:2px;text-align:center;word-break:break-all;}
+  #chiaveInput{font-size:17px;letter-spacing:2px;text-transform:uppercase;font-weight:700;}
 </style>
 </head>
 <body>
@@ -74,11 +73,17 @@
   <div class="gate-card">
     <img src="icon-512.png" alt="">
     <h2>La Quaterna d'Autore</h2>
-    <p id="gateMsg">Inserisci il tuo codice di accesso per continuare.</p>
-    <input id="codiceInput" type="text" placeholder="QA-XXXX-XXXX" maxlength="11" autocomplete="off">
-    <div style="margin-top:14px;"><button class="primary" id="btnAttiva" style="width:100%;">🔓 Attiva</button></div>
+    <p>Accesso su licenza personale</p>
+    <div class="gate-step">1️⃣ Questo è il TUO codice richiesta — mandamelo su WhatsApp:</div>
+    <div class="codice-req" id="reqCode">...</div>
+    <div class="row" style="margin-top:10px;">
+      <button class="secondary" id="btnCopiaReq">📋 Copia</button>
+      <button class="wa" id="btnReqWA" style="flex:2;">📲 Invia su WhatsApp</button>
+    </div>
+    <div class="gate-step">2️⃣ Inserisci qui la chiave di attivazione che ricevi:</div>
+    <input id="chiaveInput" type="text" placeholder="KEY-XXXX-XXXX" maxlength="12" autocomplete="off">
+    <div style="margin-top:10px;"><button class="primary" id="btnAttiva" style="width:100%;">🔓 Sblocca</button></div>
     <div id="gateErr"></div>
-    <p style="margin-top:16px;font-size:12px;color:var(--testo-sec);">Non hai un codice?<br>Contatta WhatsApp <a href="https://wa.me/393388607242" style="color:var(--wa);">338 8607242</a></p>
   </div>
 </div>
 
@@ -131,84 +136,88 @@
 </nav>
 
 <script>
-/* ============ GESTIONE LICENZE ============ */
+/* ================= LICENZE ================= */
 const LICENZE_URL="./licenze.json";
-const LS_CODICE="quaterna_codice";
-const LS_TENTATIVI="quaterna_tentativi";
-const MAX_TENTATIVI=5;
-let licenzeRemote=[], licenzaAttiva=null;
+const LS_CHIAVE="quaterna_chiave";
+const LS_REQ="quaterna_richiesta";
+let licenzeRemote=[];
 
+function randBlock(){const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<4;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+function codiceRichiesta(){
+  let r=localStorage.getItem(LS_REQ);
+  if(!r){ r="REQ-"+randBlock()+"-"+randBlock(); localStorage.setItem(LS_REQ,r); }
+  return r;
+}
 async function caricaLicenzeRemote(){
   try{ const r=await fetch(LICENZE_URL+"?t="+Date.now()); if(!r.ok) throw 0; const j=await r.json(); licenzeRemote=j.licenze||[]; }
   catch(e){ licenzeRemote=[]; }
 }
-function validaCodice(codice, lista){
-  const c=codice.toUpperCase().trim();
-  const trov=lista.find(l=>l.codice.toUpperCase()===c);
-  if(!trov) return {ok:false, motivo:"invalido"};
+function validaChiave(chiave, req){
+  const k=chiave.toUpperCase().trim();
+  const trov=licenzeRemote.find(l=>(l.chiave||"").toUpperCase()===k && (l.richiesta||"").toUpperCase()===req.toUpperCase());
+  if(!trov) return {ok:false, motivo:"invalida"};
   const oggi=new Date(); oggi.setHours(0,0,0,0);
   const scad=new Date(trov.scadenza); scad.setHours(0,0,0,0);
-  if(scad<oggi) return {ok:false, motivo:"scaduto", scadenza:trov.scadenza};
-  const gg=Math.ceil((scad-oggi)/86400000);
-  if(trov.prova && !localStorage.getItem("prova_start_"+c)){ localStorage.setItem("prova_start_"+c, new Date().toISOString().slice(0,10)); }
-  return {ok:true, licenza:trov, giorniRimasti:gg};
+  if(scad<oggi) return {ok:false, motivo:"scaduta", scadenza:trov.scadenza};
+  return {ok:true, licenza:trov, giorni:Math.ceil((scad-oggi)/86400000)};
 }
-function mostraGate(messaggio, errore){
-  document.getElementById("gate").classList.remove("hide");
-  if(messaggio) document.getElementById("gateMsg").textContent=messaggio;
-  document.getElementById("gateErr").innerHTML=errore?'<div class="msg err" style="margin-top:10px;">'+errore+'</div>':'';
-}
+function mostraGate(){ document.getElementById("gate").classList.remove("hide"); }
 function nascondiGate(){ document.getElementById("gate").classList.add("hide"); }
+
+function preparaGate(){
+  const req=codiceRichiesta();
+  document.getElementById("reqCode").textContent=req;
+  document.getElementById("btnCopiaReq").onclick=()=>{ navigator.clipboard.writeText(req).then(()=>alert("Codice copiato: "+req)); };
+  document.getElementById("btnReqWA").onclick=()=>{
+    const t="🎰 *QUATERNA D'AUTORE* — richiesta attivazione\n\nCiao! Il mio codice richiesta è:\n\n📟 *"+req+"*\n\nMi mandi la chiave di attivazione? Grazie!";
+    window.open("https://wa.me/393388607242?text="+encodeURIComponent(t),"_blank");
+  };
+}
 
 async function verificaAccesso(){
   await caricaLicenzeRemote();
-  const salvato=localStorage.getItem(LS_CODICE);
-  if(!salvato){ mostraGate("Inserisci il tuo codice di accesso per continuare."); return false; }
-  const res=validaCodice(salvato, licenzeRemote);
+  const salvata=localStorage.getItem(LS_CHIAVE);
+  if(!salvata){ preparaGate(); mostraGate(); return false; }
+  const res=validaChiave(salvata, codiceRichiesta());
   if(!res.ok){
-    localStorage.removeItem(LS_CODICE);
-    if(res.motivo==="scaduto") mostraGate("La tua licenza è scaduta il "+res.scadenza.split("-").reverse().join("/")+".","⛔ Contatta WhatsApp 338 8607242 per rinnovare.");
-    else mostraGate("Il codice salvato non è più valido.","Inserisci un nuovo codice.");
+    localStorage.removeItem(LS_CHIAVE);
+    preparaGate(); mostraGate();
+    document.getElementById("gateErr").innerHTML = res.motivo==="scaduta"
+      ? '<div class="msg err">⛔ La tua chiave è scaduta il '+res.scadenza.split("-").reverse().join("/")+'. Contattami su WhatsApp per rinnovare.</div>'
+      : '<div class="msg err">La chiave salvata non è più valida. Richiedine una nuova.</div>';
     return false;
   }
-  licenzaAttiva=res.licenza;
-  // avviso scadenza imminente
-  if(res.giorniRimasti<=7){
-    const el=document.getElementById("view-previsione");
+  if(res.giorni<=7){
     setTimeout(()=>{
-      const warn=document.createElement("div");
-      warn.className="gate-scad warn"; warn.style.marginBottom="12px";
-      warn.innerHTML="⚠️ La tua licenza scade tra <b>"+res.giorniRimasti+" giorni</b> ("+res.licenza.scadenza.split("-").reverse().join("/")+"). Rinnova: <a href='https://wa.me/393388607242' style='color:var(--wa);'>WhatsApp 338 8607242</a>";
-      el.insertBefore(warn, el.firstChild);
-    },100);
+      const el=document.getElementById("view-previsione");
+      const w=document.createElement("div");
+      w.className="msg err"; w.style.marginBottom="12px";
+      w.innerHTML="⚠️ La tua licenza scade tra <b>"+res.giorni+" giorni</b>. Rinnova su <a href='https://wa.me/393388607242' style='color:var(--wa);'>WhatsApp 338 8607242</a>";
+      el.insertBefore(w, el.firstChild);
+    },300);
   }
   nascondiGate();
   return true;
 }
 
 document.getElementById("btnAttiva").addEventListener("click", async ()=>{
-  const inp=document.getElementById("codiceInput");
-  const codice=inp.value.trim().toUpperCase();
+  const chiave=document.getElementById("chiaveInput").value.trim().toUpperCase();
   const errEl=document.getElementById("gateErr");
-  if(!codice){ errEl.innerHTML='<div class="msg err">Inserisci un codice.</div>'; return; }
-  let tent=parseInt(localStorage.getItem(LS_TENTATIVI)||"0");
-  if(tent>=MAX_TENTATIVI){ errEl.innerHTML='<div class="msg err">Troppi tentativi. Riprova tra un\'ora o contatta WhatsApp 338 8607242.</div>'; return; }
+  if(!chiave){ errEl.innerHTML='<div class="msg err">Inserisci la chiave ricevuta.</div>'; return; }
   await caricaLicenzeRemote();
-  const res=validaCodice(codice, licenzeRemote);
+  const res=validaChiave(chiave, codiceRichiesta());
   if(!res.ok){
-    tent++; localStorage.setItem(LS_TENTATIVI, String(tent));
-    if(res.motivo==="scaduto") errEl.innerHTML='<div class="msg err">⛔ Codice scaduto il '+res.scadenza.split("-").reverse().join("/")+'. Contatta 338 8607242 per rinnovare.</div>';
-    else errEl.innerHTML='<div class="msg err">❌ Codice non valido. Tentativi rimasti: '+(MAX_TENTATIVI-tent)+'</div>';
+    errEl.innerHTML = res.motivo==="scaduta"
+      ? '<div class="msg err">⛔ Chiave scaduta il '+res.scadenza.split("-").reverse().join("/")+'. Contatta WhatsApp 338 8607242.</div>'
+      : '<div class="msg err">❌ Chiave non valida per questo dispositivo. Controlla di averla copiata bene, oppure contattami.</div>';
     return;
   }
-  localStorage.setItem(LS_CODICE, codice);
-  localStorage.setItem(LS_TENTATIVI, "0");
-  licenzaAttiva=res.licenza;
+  localStorage.setItem(LS_CHIAVE, chiave);
   nascondiGate();
   avviaApp();
 });
 
-/* ============ APP ============ */
+/* ================= APP ================= */
 const RUOTE=["BA","CA","FI","GE","MI","NA","PA","RM","TO","VE","RN"];
 const NOMI=["Bari","Cagliari","Firenze","Genova","Milano","Napoli","Palermo","Roma","Torino","Venezia","Nazionale"];
 const STORAGE_KEY_MANUALI="quaterna_manuali";

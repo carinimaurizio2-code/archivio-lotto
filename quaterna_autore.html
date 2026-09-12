@@ -78,7 +78,7 @@
     <div class="codice-req" id="reqCode">...</div>
     <button class="wa" id="btnCopiaReq">📋 COPIA CODICE RICHIESTA</button>
     <div class="gate-step">2️⃣ Inserisci qui la chiave di attivazione che ricevi:</div>
-    <input id="chiaveInput" type="text" placeholder="KEY-XXXX-XXXX" maxlength="12" autocomplete="off">
+    <input id="chiaveInput" type="text" placeholder="KEY-XXXX-XXXX" maxlength="20" autocomplete="off">
     <div style="margin-top:10px;"><button class="primary" id="btnAttiva" style="width:100%;">🔓 SBLOCCA</button></div>
     <div id="gateErr"></div>
     <p style="margin-top:14px;font-size:12px;color:var(--testo-sec);">Info e assistenza:<br><a href="https://wa.me/393388607242" style="color:#25d366;">WhatsApp 338 8607242</a></p>
@@ -142,15 +142,17 @@ let licenzeRemote=[];
 
 function randBlock(){const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<4;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
 function codiceRichiesta(){ let r=localStorage.getItem(LS_REQ); if(!r){ r="REQ-"+randBlock()+"-"+randBlock(); localStorage.setItem(LS_REQ,r); } return r; }
+function isVita(l){ return (l.scadenza||"")>="2099-01-01"; }
 async function caricaLicenzeRemote(){ try{ const r=await fetch(LICENZE_URL+"?t="+Date.now()); if(!r.ok) throw 0; const j=await r.json(); licenzeRemote=j.licenze||[]; } catch(e){ licenzeRemote=[]; } }
 function validaChiave(chiave, req){
   const k=chiave.toUpperCase().trim();
   const trov=licenzeRemote.find(l=>(l.chiave||"").toUpperCase()===k && (l.richiesta||"").toUpperCase()===req.toUpperCase());
   if(!trov) return {ok:false, motivo:"invalida"};
+  if(isVita(trov)) return {ok:true, licenza:trov, giorni:99999, vita:true};
   const oggi=new Date(); oggi.setHours(0,0,0,0);
   const scad=new Date(trov.scadenza); scad.setHours(0,0,0,0);
   if(scad<oggi) return {ok:false, motivo:"scaduta", scadenza:trov.scadenza};
-  return {ok:true, licenza:trov, giorni:Math.ceil((scad-oggi)/86400000)};
+  return {ok:true, licenza:trov, giorni:Math.ceil((scad-oggi)/86400000), vita:false};
 }
 function mostraGate(){ document.getElementById("gate").classList.remove("hide"); }
 function nascondiGate(){ document.getElementById("gate").classList.add("hide"); }
@@ -174,7 +176,7 @@ async function verificaAccesso(){
       : '<div class="msg err">La chiave salvata non è più valida. Richiedine una nuova.</div>';
     return false;
   }
-  if(res.giorni<=7){ setTimeout(()=>{ const el=document.getElementById("view-previsione"); const w=document.createElement("div"); w.className="msg err"; w.style.marginBottom="12px"; w.innerHTML="⚠️ Licenza in scadenza tra <b>"+res.giorni+" giorni</b>. Contatta per rinnovare."; el.insertBefore(w, el.firstChild); },300); }
+  if(!res.vita && res.giorni<=7){ setTimeout(()=>{ const el=document.getElementById("view-previsione"); const w=document.createElement("div"); w.className="msg err"; w.style.marginBottom="12px"; w.innerHTML="⚠️ Licenza in scadenza tra <b>"+res.giorni+" giorni</b>. Contatta per rinnovare."; el.insertBefore(w, el.firstChild); },300); }
   nascondiGate(); return true;
 }
 document.getElementById("btnAttiva").addEventListener("click", async ()=>{
